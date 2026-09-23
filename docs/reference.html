@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technician's Toolkit V30 Pro - Complete Command Reference</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+            color: #ffffff;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #2d2d2d;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            padding: 40px;
+            text-align: center;
+            border-bottom: 3px solid #4a90e2;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #1e1e1e;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #3d3d3d 0%, #2d2d2d 100%);
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #4a90e2;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(74, 144, 226, 0.3);
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            color: #4a90e2;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.1em;
+            color: #b0b0b0;
+        }
+
+        .search-box {
+            padding: 30px;
+            background: #1e1e1e;
+            border-bottom: 2px solid #3d3d3d;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1.1em;
+            border: 2px solid #4a90e2;
+            border-radius: 8px;
+            background: #2d2d2d;
+            color: #ffffff;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        #searchInput:focus {
+            border-color: #5ba3f5;
+            box-shadow: 0 0 10px rgba(74, 144, 226, 0.3);
+        }
+
+        #searchInput::placeholder {
+            color: #6c757d;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .menu-section {
+            margin-bottom: 40px;
+            background: #1e1e1e;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #3d3d3d;
+        }
+
+        .menu-header {
+            background: linear-gradient(135deg, #3d3d3d 0%, #2d2d2d 100%);
+            padding: 20px 30px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #4a90e2;
+            transition: background 0.3s;
+        }
+
+        .menu-header:hover {
+            background: linear-gradient(135deg, #4a4a4a 0%, #3d3d3d 100%);
+        }
+
+        .menu-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #4a90e2;
+        }
+
+        .menu-count {
+            background: #4a90e2;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .menu-content {
+            padding: 20px 30px;
+            display: none;
+        }
+
+        .menu-content.active {
+            display: block;
+        }
+
+        .submenu {
+            margin: 20px 0;
+        }
+
+        .submenu-title {
+            font-size: 1.3em;
+            color: #5ba3f5;
+            margin-bottom: 15px;
+            padding-left: 10px;
+            border-left: 4px solid #4a90e2;
+            font-weight: 600;
+        }
+
+        .command-list {
+            list-style: none;
+            margin-left: 20px;
+        }
+
+        .command-item {
+            padding: 10px 15px;
+            margin: 5px 0;
+            background: #2d2d2d;
+            border-radius: 5px;
+            border-left: 3px solid #4a90e2;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .command-item:hover {
+            background: #3d3d3d;
+            transform: translateX(5px);
+            border-left-color: #5ba3f5;
+        }
+
+        .command-icon {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .command-name {
+            flex: 1;
+            color: #e0e0e0;
+        }
+
+        .collapse-btn {
+            background: none;
+            border: none;
+            color: #4a90e2;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .collapse-btn.active {
+            transform: rotate(180deg);
+        }
+
+        footer {
+            background: #1e1e1e;
+            padding: 30px;
+            text-align: center;
+            border-top: 2px solid #3d3d3d;
+            color: #b0b0b0;
+        }
+
+        .highlight {
+            background: rgba(74, 144, 226, 0.3);
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .menu-title {
+                font-size: 1.3em;
+            }
+        }
+
+        .toc {
+            background: #1e1e1e;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            border: 2px solid #4a90e2;
+        }
+
+        .toc h2 {
+            color: #4a90e2;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .toc-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+            list-style: none;
+        }
+
+        .toc-item {
+            padding: 10px 15px;
+            background: #2d2d2d;
+            border-radius: 5px;
+            border-left: 3px solid #4a90e2;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toc-item:hover {
+            background: #3d3d3d;
+            transform: translateX(5px);
+        }
+
+        .toc-link {
+            color: #e0e0e0;
+            text-decoration: none;
+            display: block;
+        }
+
+        .expand-all-btn {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin: 20px;
+            transition: background 0.3s;
+        }
+
+        .expand-all-btn:hover {
+            background: #5ba3f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛠️ Technician's Toolkit V30 Pro</h1>
+            <p>Complete Command Reference & Feature Documentation</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat-card">
+                <span class="stat-number">450+</span>
+                <span class="stat-label">Total Commands</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">23</span>
+                <span class="stat-label">Menu Categories</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">200+</span>
+                <span class="stat-label">Quick Install Programs</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">90+</span>
+                <span class="stat-label">Advanced Features</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">7</span>
+                <span class="stat-label">AI Assistants</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">100%</span>
+                <span class="stat-label">Windows 11 Compatible</span>
+            </div>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 Search commands... (e.g., 'network', 'backup', 'CPU')" onkeyup="searchCommands()">
+        </div>
+
+        <div class="content">
+            <button class="expand-all-btn" onclick="toggleAllSections()">Expand All Sections</button>
+
+            <div class="toc">
+                <h2>📋 Quick Navigation</h2>
+                <ul class="toc-list">
+                    <li class="toc-item"><a href="#file" class="toc-link">📁 File Menu (15)</a></li>
+                    <li class="toc-item"><a href="#automated" class="toc-link">🤖 Automated (6)</a></li>
+                    <li class="toc-item"><a href="#system" class="toc-link">🩺 System (50+)</a></li>
+                    <li class="toc-item"><a href="#maintenance" class="toc-link">🔧 Maintenance (60+)</a></li>
+                    <li class="toc-item"><a href="#network" class="toc-link">🌐 Network (50+)</a></li>
+                    <li class="toc-item"><a href="#security" class="toc-link">🔒 Security (35+)</a></li>
+                    <li class="toc-item"><a href="#software" class="toc-link">💾 Software (220+)</a></li>
+                    <li class="toc-item"><a href="#rescue" class="toc-link">🛟 Rescue & Recovery (40+)</a></li>
+                    <li class="toc-item"><a href="#help" class="toc-link">❓ Help (30+)</a></li>
+                    <li class="toc-item"><a href="#advanced" class="toc-link">⚙️ Advanced (90+)</a></li>
+                </ul>
+            </div>
+
+            <!-- FILE MENU -->
+            <div class="menu-section" id="file">
+                <div class="menu-header" onclick="toggleSection(this)">
+                    <span class="menu-title">📁 File Menu</span>
+                    <div>
+                        <span class="menu-count">15 commands</span>
+                        <button class="collapse-btn">▼</button>
+                    </div>
+                </div>
+                <div class="menu-content">
+                    <div class="submenu">
+                        <div class="submenu-title">⚡ Quick Access</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">💻</span><span class="command-name">This PC (Explorer)</span></li>
+                            <li class="command-item"><span class="command-icon">🖥️</span><span class="command-name">Control Panel</span></li>
+                            <li class="command-item"><span class="command-icon">⚙️</span><span class="command-name">Settings</span></li>
+                            <li class="command-item"><span class="command-icon">📂</span><span class="command-name">Program Files</span></li>
+                            <li class="command-item"><span class="command-icon">🔧</span><span class="command-name">Device Manager</span></li>
+                            <li class="command-item"><span class="command-icon">💾</span><span class="command-name">Disk Management</span></li>
+                            <li class="command-item"><span class="command-icon">📊</span><span class="command-name">Task Manager</span></li>
+                            <li class="command-item"><span class="command-icon">🎨</span><span class="command-name">God Mode</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🖥️ Open Terminal</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">⬛</span><span class="command-name">Command Prompt</span></li>
+                            <li class="command-item"><span class="command-icon">🔵</span><span class="command-name">PowerShell</span></li>
+                            <li class="command-item"><span class="command-icon">🔷</span><span class="command-name">PowerShell (Admin)</span></li>
+                            <li class="command-item"><span class="command-icon">🪟</span><span class="command-name">Windows Terminal</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🔄 Other Functions</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🔄</span><span class="command-name">Refresh System Info</span></li>
+                            <li class="command-item"><span class="command-icon">📋</span><span class="command-name">Export Logs</span></li>
+                            <li class="command-item"><span class="command-icon">🚪</span><span class="command-name">Exit</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AUTOMATED MENU -->
+            <div class="menu-section" id="automated">
+                <div class="menu-header" onclick="toggleSection(this)">
+                    <span class="menu-title">🤖 Automated Menu</span>
+                    <div>
+                        <span class="menu-count">6 commands</span>
+                        <button class="collapse-btn">▼</button>
+                    </div>
+                </div>
+                <div class="menu-content">
+                    <ul class="command-list">
+                        <li class="command-item"><span class="command-icon">⚡</span><span class="command-name">Quick PC Health Check</span></li>
+                        <li class="command-item"><span class="command-icon">🔧</span><span class="command-name">Auto-Repair (SFC + DISM)</span></li>
+                        <li class="command-item"><span class="command-icon">🗑️</span><span class="command-name">Aggressive Cleanup</span></li>
+                        <li class="command-item"><span class="command-icon">🧹</span><span class="command-name">Deep Clean</span></li>
+                        <li class="command-item"><span class="command-icon">🚀</span><span class="command-name">Performance Boost</span></li>
+                        <li class="command-item"><span class="command-icon">💉</span><span class="command-name">Fix Common Issues</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- SYSTEM DIAGNOSTICS MENU -->
+            <div class="menu-section" id="system">
+                <div class="menu-header" onclick="toggleSection(this)">
+                    <span class="menu-title">🩺 System Diagnostics</span>
+                    <div>
+                        <span class="menu-count">50+ commands</span>
+                        <button class="collapse-btn">▼</button>
+                    </div>
+                </div>
+                <div class="menu-content">
+                    <div class="submenu">
+                        <div class="submenu-title">💻 Hardware Info</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🖥️</span><span class="command-name">CPU Information</span></li>
+                            <li class="command-item"><span class="command-icon">🎮</span><span class="command-name">GPU Information</span></li>
+                            <li class="command-item"><span class="command-icon">💾</span><span class="command-name">Memory Details (RAM)</span></li>
+                            <li class="command-item"><span class="command-icon">💿</span><span class="command-name">Disk Information</span></li>
+                            <li class="command-item"><span class="command-icon">🔲</span><span class="command-name">Motherboard Info</span></li>
+                            <li class="command-item"><span class="command-icon">⚡</span><span class="command-name">BIOS Information</span></li>
+                            <li class="command-item"><span class="command-icon">🖼️</span><span class="command-name">Monitor Information</span></li>
+                            <li class="command-item"><span class="command-icon">🔊</span><span class="command-name">Sound Devices</span></li>
+                            <li class="command-item"><span class="command-icon">🔌</span><span class="command-name">USB Devices</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">📊 System Information</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">📋</span><span class="command-name">Full System Report</span></li>
+                            <li class="command-item"><span class="command-icon">🪟</span><span class="command-name">Windows Version</span></li>
+                            <li class="command-item"><span class="command-icon">🖥️</span><span class="command-name">Computer Name</span></li>
+                            <li class="command-item"><span class="command-icon">🌐</span><span class="command-name">Domain/Workgroup</span></li>
+                            <li class="command-item"><span class="command-icon">🏗️</span><span class="command-name">System Architecture</span></li>
+                            <li class="command-item"><span class="command-icon">🔢</span><span class="command-name">Serial Numbers</span></li>
+                            <li class="command-item"><span class="command-icon">🔑</span><span class="command-name">Product Key</span></li>
+                            <li class="command-item"><span class="command-icon">⏱️</span><span class="command-name">System Uptime</span></li>
+                            <li class="command-item"><span class="command-icon">⚡</span><span class="command-name">Power Configuration</span></li>
+                            <li class="command-item"><span class="command-icon">🔋</span><span class="command-name">Battery Report</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🔌 Drivers</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">📋</span><span class="command-name">List All Drivers</span></li>
+                            <li class="command-item"><span class="command-icon">📦</span><span class="command-name">3rd Party Drivers</span></li>
+                            <li class="command-item"><span class="command-icon">✔️</span><span class="command-name">Check Driver Signatures</span></li>
+                            <li class="command-item"><span class="command-icon">💾</span><span class="command-name">Backup Drivers</span></li>
+                            <li class="command-item"><span class="command-icon">🔌</span><span class="command-name">PnP Devices</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🏥 Health Checks</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">💿</span><span class="command-name">Disk Health (SMART)</span></li>
+                            <li class="command-item"><span class="command-icon">🧠</span><span class="command-name">Memory Diagnostics</span></li>
+                            <li class="command-item"><span class="command-icon">🔍</span><span class="command-name">SFC Scan</span></li>
+                            <li class="command-item"><span class="command-icon">🛠️</span><span class="command-name">DISM Check</span></li>
+                            <li class="command-item"><span class="command-icon">✔️</span><span class="command-name">System File Verification</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🎮 DirectX & Graphics</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🎮</span><span class="command-name">DirectX Diagnostic Tool</span></li>
+                            <li class="command-item"><span class="command-icon">🖼️</span><span class="command-name">Display Settings</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">📊 Other Tools</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">📈</span><span class="command-name">Performance Monitor</span></li>
+                            <li class="command-item"><span class="command-icon">🔍</span><span class="command-name">Resource Monitor</span></li>
+                            <li class="command-item"><span class="command-icon">📝</span><span class="command-name">Event Viewer</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MAINTENANCE MENU -->
+            <div class="menu-section" id="maintenance">
+                <div class="menu-header" onclick="toggleSection(this)">
+                    <span class="menu-title">🔧 Maintenance Menu</span>
+                    <div>
+                        <span class="menu-count">60+ commands</span>
+                        <button class="collapse-btn">▼</button>
+                    </div>
+                </div>
+                <div class="menu-content">
+                    <div class="submenu">
+                        <div class="submenu-title">🔄 Windows Update</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🔍</span><span class="command-name">Check for Updates</span></li>
+                            <li class="command-item"><span class="command-icon">📜</span><span class="command-name">View Update History</span></li>
+                            <li class="command-item"><span class="command-icon">📋</span><span class="command-name">List Installed Updates</span></li>
+                            <li class="command-item"><span class="command-icon">🗑️</span><span class="command-name">Clear Update Cache</span></li>
+                            <li class="command-item"><span class="command-icon">🔄</span><span class="command-name">Reset Windows Update</span></li>
+                            <li class="command-item"><span class="command-icon">🔧</span><span class="command-name">Windows Update Troubleshooter</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🗑️ Cleanup Tools</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🧹</span><span class="command-name">Disk Cleanup (Regular)</span></li>
+                            <li class="command-item"><span class="command-icon">🗑️</span><span class="command-name">Disk Cleanup (System Files)</span></li>
+                            <li class="command-item"><span class="command-icon">📁</span><span class="command-name">Clear Temp Files</span></li>
+                            <li class="command-item"><span class="command-icon">💾</span><span class="command-name">Clear Windows Update Cache</span></li>
+                            <li class="command-item"><span class="command-icon">⚡</span><span class="command-name">Clear Prefetch</span></li>
+                            <li class="command-item"><span class="command-icon">📝</span><span class="command-name">Clear Event Logs</span></li>
+                            <li class="command-item"><span class="command-icon">🗑️</span><span class="command-name">Empty Recycle Bin</span></li>
+                            <li class="command-item"><span class="command-icon">🌐</span><span class="command-name">Clear DNS Cache</span></li>
+                            <li class="command-item"><span class="command-icon">🏬</span><span class="command-name">Clear Windows Store Cache</span></li>
+                            <li class="command-item"><span class="command-icon">🔤</span><span class="command-name">Clear Font Cache</span></li>
+                            <li class="command-item"><span class="command-icon">🖼️</span><span class="command-name">Clear Thumbnail Cache</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">⚡ Optimization</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">💿</span><span class="command-name">Defragment & Optimize Drives</span></li>
+                            <li class="command-item"><span class="command-icon">🚀</span><span class="command-name">Optimize System Performance</span></li>
+                            <li class="command-item"><span class="command-icon">🚫</span><span class="command-name">Disable Startup Programs</span></li>
+                            <li class="command-item"><span class="command-icon">⚙️</span><span class="command-name">Services Management</span></li>
+                            <li class="command-item"><span class="command-icon">⏰</span><span class="command-name">Task Scheduler</span></li>
+                            <li class="command-item"><span class="command-icon">💤</span><span class="command-name">Manage Hibernation</span></li>
+                            <li class="command-item"><span class="command-icon">⚡</span><span class="command-name">Power Options</span></li>
+                            <li class="command-item"><span class="command-icon">🎨</span><span class="command-name">Visual Effects Settings</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">💾 Disk Tools</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">💿</span><span class="command-name">Disk Management</span></li>
+                            <li class="command-item"><span class="command-icon">🔍</span><span class="command-name">Check Disk for Errors</span></li>
+                            <li class="command-item"><span class="command-icon">📊</span><span class="command-name">Partition Manager</span></li>
+                            <li class="command-item"><span class="command-icon">💾</span><span class="command-name">Storage Sense</span></li>
+                            <li class="command-item"><span class="command-icon">📈</span><span class="command-name">Disk Space Analysis</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">⏰ Scheduled Tasks</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">📅</span><span class="command-name">Task Scheduler</span></li>
+                            <li class="command-item"><span class="command-icon">📋</span><span class="command-name">List All Scheduled Tasks</span></li>
+                            <li class="command-item"><span class="command-icon">🚫</span><span class="command-name">Disable Telemetry Tasks</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NETWORK MENU -->
+            <div class="menu-section" id="network">
+                <div class="menu-header" onclick="toggleSection(this)">
+                    <span class="menu-title">🌐 Network Menu</span>
+                    <div>
+                        <span class="menu-count">50+ commands</span>
+                        <button class="collapse-btn">▼</button>
+                    </div>
+                </div>
+                <div class="menu-content">
+                    <div class="submenu">
+                        <div class="submenu-title">📊 Network Information</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🌐</span><span class="command-name">IP Configuration (Full)</span></li>
+                            <li class="command-item"><span class="command-icon">🔌</span><span class="command-name">Network Adapters</span></li>
+                            <li class="command-item"><span class="command-icon">🔑</span><span class="command-name">MAC Address</span></li>
+                            <li class="command-item"><span class="command-icon">🔗</span><span class="command-name">Active Connections</span></li>
+                            <li class="command-item"><span class="command-icon">👂</span><span class="command-name">Listening Ports</span></li>
+                            <li class="command-item"><span class="command-icon">🗺️</span><span class="command-name">Routing Table</span></li>
+                            <li class="command-item"><span class="command-icon">📋</span><span class="command-name">ARP Cache</span></li>
+                            <li class="command-item"><span class="command-icon">🌐</span><span class="command-name">DNS Cache</span></li>
+                            <li class="command-item"><span class="command-icon">📊</span><span class="command-name">Network Statistics</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🔧 Network Tools</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🌐</span><span class="command-name">Network & Sharing Center</span></li>
+                            <li class="command-item"><span class="command-icon">🔌</span><span class="command-name">Network Connections</span></li>
+                            <li class="command-item"><span class="command-icon">🔄</span><span class="command-name">Reset Network Stack</span></li>
+                            <li class="command-item"><span class="command-icon">🆓</span><span class="command-name">Release IP Address</span></li>
+                            <li class="command-item"><span class="command-icon">🔄</span><span class="command-name">Renew IP Address</span></li>
+                            <li class="command-item"><span class="command-icon">🗑️</span><span class="command-name">Flush DNS Cache</span></li>
+                            <li class="command-item"><span class="command-icon">🔄</span><span class="command-name">Reset Winsock</span></li>
+                            <li class="command-item"><span class="command-icon">🔄</span><span class="command-name">Reset TCP/IP</span></li>
+                            <li class="command-item"><span class="command-icon">🔧</span><span class="command-name">Network Troubleshooter</span></li>
+                            <li class="command-item"><span class="command-icon">📡</span><span class="command-name">Ping Test</span></li>
+                            <li class="command-item"><span class="command-icon">🗺️</span><span class="command-name">Trace Route</span></li>
+                            <li class="command-item"><span class="command-icon">🔍</span><span class="command-name">NSLookup</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">📶 WiFi</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">📋</span><span class="command-name">Show WiFi Profiles</span></li>
+                            <li class="command-item"><span class="command-icon">📊</span><span class="command-name">WiFi Network Report</span></li>
+                            <li class="command-item"><span class="command-icon">🔑</span><span class="command-name">Show WiFi Passwords</span></li>
+                            <li class="command-item"><span class="command-icon">💾</span><span class="command-name">Export WiFi Profiles</span></li>
+                            <li class="command-item"><span class="command-icon">📥</span><span class="command-name">Import/Restore WiFi Profiles</span></li>
+                            <li class="command-item"><span class="command-icon">🗑️</span><span class="command-name">Forget All WiFi Networks</span></li>
+                            <li class="command-item"><span class="command-icon">📶</span><span class="command-name">WiFi Signal Strength</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🖥️ Remote Access</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🖥️</span><span class="command-name">Remote Desktop Connection</span></li>
+                            <li class="command-item"><span class="command-icon">🆘</span><span class="command-name">Remote Assistance</span></li>
+                            <li class="command-item"><span class="command-icon">✅</span><span class="command-name">Enable Remote Desktop</span></li>
+                            <li class="command-item"><span class="command-icon">❌</span><span class="command-name">Disable Remote Desktop</span></li>
+                            <li class="command-item"><span class="command-icon">🤝</span><span class="command-name">Quick Assist</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🛡️ Firewall</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🛡️</span><span class="command-name">Windows Firewall</span></li>
+                            <li class="command-item"><span class="command-icon">⚙️</span><span class="command-name">Firewall Advanced Settings</span></li>
+                            <li class="command-item"><span class="command-icon">📋</span><span class="command-name">Firewall Rules</span></li>
+                            <li class="command-item"><span class="command-icon">✅</span><span class="command-name">Enable Firewall</span></li>
+                            <li class="command-item"><span class="command-icon">❌</span><span class="command-name">Disable Firewall</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">📝 Hosts File</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">📝</span><span class="command-name">Open Hosts File</span></li>
+                            <li class="command-item"><span class="command-icon">💾</span><span class="command-name">Backup Hosts File</span></li>
+                            <li class="command-item"><span class="command-icon">🔄</span><span class="command-name">Restore Default Hosts</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECURITY MENU -->
+            <div class="menu-section" id="security">
+                <div class="menu-header" onclick="toggleSection(this)">
+                    <span class="menu-title">🔒 Security Menu</span>
+                    <div>
+                        <span class="menu-count">35+ commands</span>
+                        <button class="collapse-btn">▼</button>
+                    </div>
+                </div>
+                <div class="menu-content">
+                    <div class="submenu">
+                        <div class="submenu-title">🛡️ Windows Security</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🛡️</span><span class="command-name">Windows Security Center</span></li>
+                            <li class="command-item"><span class="command-icon">⚡</span><span class="command-name">Quick Scan</span></li>
+                            <li class="command-item"><span class="command-icon">🔍</span><span class="command-name">Full Scan</span></li>
+                            <li class="command-item"><span class="command-icon">🔄</span><span class="command-name">Update Virus Definitions</span></li>
+                            <li class="command-item"><span class="command-icon">📂</span><span class="command-name">Scan Specific Folder</span></li>
+                            <li class="command-item"><span class="command-icon">📜</span><span class="command-name">Protection History</span></li>
+                            <li class="command-item"><span class="command-icon">🚫</span><span class="command-name">Manage Exclusions</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">👤 User Accounts</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">👥</span><span class="command-name">User Accounts Management</span></li>
+                            <li class="command-item"><span class="command-icon">📋</span><span class="command-name">List All Users</span></li>
+                            <li class="command-item"><span class="command-icon">👥</span><span class="command-name">List All Groups</span></li>
+                            <li class="command-item"><span class="command-icon">🔑</span><span class="command-name">List Administrators</span></li>
+                            <li class="command-item"><span class="command-icon">ℹ️</span><span class="command-name">Current User Info</span></li>
+                            <li class="command-item"><span class="command-icon">🔐</span><span class="command-name">Change Password</span></li>
+                            <li class="command-item"><span class="command-icon">➕</span><span class="command-name">Create New User</span></li>
+                            <li class="command-item"><span class="command-icon">❌</span><span class="command-name">Delete User</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">📋 Group Policy</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">📝</span><span class="command-name">Local Group Policy Editor</span></li>
+                            <li class="command-item"><span class="command-icon">📊</span><span class="command-name">Group Policy Results</span></li>
+                            <li class="command-item"><span class="command-icon">🔄</span><span class="command-name">Update Group Policy</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🛡️ UAC & BitLocker</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🛡️</span><span class="command-name">UAC Settings</span></li>
+                            <li class="command-item"><span class="command-icon">✅</span><span class="command-name">Enable UAC</span></li>
+                            <li class="command-item"><span class="command-icon">❌</span><span class="command-name">Disable UAC</span></li>
+                            <li class="command-item"><span class="command-icon">🔐</span><span class="command-name">BitLocker Settings</span></li>
+                            <li class="command-item"><span class="command-icon">📊</span><span class="command-name">BitLocker Status</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🔐 Other Security</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🔐</span><span class="command-name">Certificate Manager</span></li>
+                            <li class="command-item"><span class="command-icon">🔑</span><span class="command-name">Credential Manager</span></li>
+                            <li class="command-item"><span class="command-icon">📜</span><span class="command-name">Local Security Policy</span></li>
+                            <li class="command-item"><span class="command-icon">📝</span><span class="command-name">Audit Policy</span></li>
+                            <li class="command-item"><span class="command-icon">📋</span><span class="command-name">Installed Updates/Hotfixes</span></li>
+                            <li class="command-item"><span class="command-icon">🔍</span><span class="command-name">Check for Rootkits</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SOFTWARE MENU -->
+            <div class="menu-section" id="software">
+                <div class="menu-header" onclick="toggleSection(this)">
+                    <span class="menu-title">💾 Software Menu</span>
+                    <div>
+                        <span class="menu-count">220+ programs</span>
+                        <button class="collapse-btn">▼</button>
+                    </div>
+                </div>
+                <div class="menu-content">
+                    <div class="submenu">
+                        <div class="submenu-title">📋 Installed Programs</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">📋</span><span class="command-name">List All Programs (Detailed)</span></li>
+                            <li class="command-item"><span class="command-icon">⚡</span><span class="command-name">List All Programs (Quick)</span></li>
+                            <li class="command-item"><span class="command-icon">📦</span><span class="command-name">Programs & Features</span></li>
+                            <li class="command-item"><span class="command-icon">📱</span><span class="command-name">Installed Apps (Settings)</span></li>
+                            <li class="command-item"><span class="command-icon">🚀</span><span class="command-name">Startup Applications</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🌐 Web Browsers (8 programs)</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🔵</span><span class="command-name">Google Chrome</span></li>
+                            <li class="command-item"><span class="command-icon">🦊</span><span class="command-name">Mozilla Firefox</span></li>
+                            <li class="command-item"><span class="command-icon">🦁</span><span class="command-name">Brave Browser</span></li>
+                            <li class="command-item"><span class="command-icon">🌊</span><span class="command-name">Microsoft Edge</span></li>
+                            <li class="command-item"><span class="command-icon">🎭</span><span class="command-name">Opera</span></li>
+                            <li class="command-item"><span class="command-icon">🎮</span><span class="command-name">Opera GX</span></li>
+                            <li class="command-item"><span class="command-icon">🔴</span><span class="command-name">Vivaldi</span></li>
+                            <li class="command-item"><span class="command-icon">🧅</span><span class="command-name">Tor Browser</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🔧 Essential Tools (7 programs)</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">📦</span><span class="command-name">7-Zip</span></li>
+                            <li class="command-item"><span class="command-icon">📦</span><span class="command-name">WinRAR</span></li>
+                            <li class="command-item"><span class="command-icon">🎬</span><span class="command-name">VLC Media Player</span></li>
+                            <li class="command-item"><span class="command-icon">📄</span><span class="command-name">Adobe Reader</span></li>
+                            <li class="command-item"><span class="command-icon">📄</span><span class="command-name">Foxit PDF Reader</span></li>
+                            <li class="command-item"><span class="command-icon">📄</span><span class="command-name">Sumatra PDF</span></li>
+                            <li class="command-item"><span class="command-icon">🎬</span><span class="command-name">K-Lite Codec Pack</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">💬 Communication (8 programs)</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">💜</span><span class="command-name">Discord</span></li>
+                            <li class="command-item"><span class="command-icon">💼</span><span class="command-name">Slack</span></li>
+                            <li class="command-item"><span class="command-icon">🎥</span><span class="command-name">Microsoft Teams</span></li>
+                            <li class="command-item"><span class="command-icon">📹</span><span class="command-name">Zoom</span></li>
+                            <li class="command-item"><span class="command-icon">☁️</span><span class="command-name">Skype</span></li>
+                            <li class="command-item"><span class="command-icon">✈️</span><span class="command-name">Telegram</span></li>
+                            <li class="command-item"><span class="command-icon">💚</span><span class="command-name">WhatsApp</span></li>
+                            <li class="command-item"><span class="command-icon">🔒</span><span class="command-name">Signal</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🎬 Media & Entertainment (9 programs)</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🎬</span><span class="command-name">VLC Media Player</span></li>
+                            <li class="command-item"><span class="command-icon">🎵</span><span class="command-name">Spotify</span></li>
+                            <li class="command-item"><span class="command-icon">🍎</span><span class="command-name">iTunes</span></li>
+                            <li class="command-item"><span class="command-icon">🎙️</span><span class="command-name">Audacity</span></li>
+                            <li class="command-item"><span class="command-icon">📹</span><span class="command-name">OBS Studio</span></li>
+                            <li class="command-item"><span class="command-icon">🎬</span><span class="command-name">HandBrake</span></li>
+                            <li class="command-item"><span class="command-icon">▶️</span><span class="command-name">MPC-HC</span></li>
+                            <li class="command-item"><span class="command-icon">📺</span><span class="command-name">Kodi</span></li>
+                            <li class="command-item"><span class="command-icon">🎥</span><span class="command-name">Plex</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">💻 Developer Tools (14 programs)</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">💙</span><span class="command-name">Visual Studio Code</span></li>
+                            <li class="command-item"><span class="command-icon">💜</span><span class="command-name">Visual Studio 2022 Community</span></li>
+                            <li class="command-item"><span class="command-icon">📚</span><span class="command-name">Git</span></li>
+                            <li class="command-item"><span class="command-icon">😺</span><span class="command-name">GitHub Desktop</span></li>
+                            <li class="command-item"><span class="command-icon">🐍</span><span class="command-name">Python 3.12</span></li>
+                            <li class="command-item"><span class="command-icon">💚</span><span class="command-name">Node.js</span></li>
+                            <li class="command-item"><span class="command-icon">🐋</span><span class="command-name">Docker Desktop</span></li>
+                            <li class="command-item"><span class="command-icon">📮</span><span class="command-name">Postman</span></li>
+                            <li class="command-item"><span class="command-icon">🧰</span><span class="command-name">JetBrains Toolbox</span></li>
+                            <li class="command-item"><span class="command-icon">🤖</span><span class="command-name">Android Studio</span></li>
+                            <li class="command-item"><span class="command-icon">🎮</span><span class="command-name">Unity Hub</span></li>
+                            <li class="command-item"><span class="command-icon">📝</span><span class="command-name">Sublime Text 4</span></li>
+                            <li class="command-item"><span class="command-icon">⚛️</span><span class="command-name">Atom</span></li>
+                            <li class="command-item"><span class="command-icon">📝</span><span class="command-name">Notepad++</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🛠️ System Utilities (13 programs)</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">⚡</span><span class="command-name">PowerToys</span></li>
+                            <li class="command-item"><span class="command-icon">🔍</span><span class="command-name">Everything Search</span></li>
+                            <li class="command-item"><span class="command-icon">🧹</span><span class="command-name">CCleaner</span></li>
+                            <li class="command-item"><span class="command-icon">🌲</span><span class="command-name">TreeSize Free</span></li>
+                            <li class="command-item"><span class="command-icon">🧙</span><span class="command-name">WizTree</span></li>
+                            <li class="command-item"><span class="command-icon">🔧</span><span class="command-name">Sysinternals Suite</span></li>
+                            <li class="command-item"><span class="command-icon">📊</span><span class="command-name">Process Explorer</span></li>
+                            <li class="command-item"><span class="command-icon">⌨️</span><span class="command-name">AutoHotkey</span></li>
+                            <li class="command-item"><span class="command-icon">📸</span><span class="command-name">ShareX</span></li>
+                            <li class="command-item"><span class="command-icon">📷</span><span class="command-name">Greenshot</span></li>
+                            <li class="command-item"><span class="command-icon">💿</span><span class="command-name">Rufus</span></li>
+                            <li class="command-item"><span class="command-icon">⚡</span><span class="command-name">Balena Etcher</span></li>
+                            <li class="command-item"><span class="command-icon">🔀</span><span class="command-name">Ventoy</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🖥️ Remote Access (7 programs)</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">📺</span><span class="command-name">TeamViewer</span></li>
+                            <li class="command-item"><span class="command-icon">🖥️</span><span class="command-name">AnyDesk</span></li>
+                            <li class="command-item"><span class="command-icon">🦀</span><span class="command-name">RustDesk</span></li>
+                            <li class="command-item"><span class="command-icon">🔒</span><span class="command-name">TightVNC</span></li>
+                            <li class="command-item"><span class="command-icon">🔵</span><span class="command-name">UltraVNC</span></li>
+                            <li class="command-item"><span class="command-icon">🎮</span><span class="command-name">Parsec</span></li>
+                            <li class="command-item"><span class="command-icon">🌐</span><span class="command-name">Chrome Remote Desktop</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🔒 Security & Privacy (8 programs)</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🛡️</span><span class="command-name">Malwarebytes</span></li>
+                            <li class="command-item"><span class="command-icon">🔐</span><span class="command-name">Bitwarden</span></li>
+                            <li class="command-item"><span class="command-icon">1️⃣</span><span class="command-name">1Password</span></li>
+                            <li class="command-item"><span class="command-icon">🔑</span><span class="command-name">KeePassXC</span></li>
+                            <li class="command-item"><span class="command-icon">🌍</span><span class="command-name">NordVPN</span></li>
+                            <li class="command-item"><span class="command-icon">🔒</span><span class="command-name">ProtonVPN</span></li>
+                            <li class="command-item"><span class="command-icon">🔐</span><span class="command-name">VeraCrypt</span></li>
+                            <li class="command-item"><span class="command-icon">🦈</span><span class="command-name">Wireshark</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">☁️ Cloud Storage (7 programs)</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🔵</span><span class="command-name">Google Drive</span></li>
+                            <li class="command-item"><span class="command-icon">📦</span><span class="command-name">Dropbox</span></li>
+                            <li class="command-item"><span class="command-icon">☁️</span><span class="command-name">OneDrive</span></li>
+                            <li class="command-item"><span class="command-icon">☁️</span><span class="command-name">Nextcloud</span></li>
+                            <li class="command-item"><span class="command-icon">M</span><span class="command-name">MEGA</span></li>
+                            <li class="command-item"><span class="command-icon">📦</span><span class="command-name">Box Drive</span></li>
+                            <li class="command-item"><span class="command-icon">☁️</span><span class="command-name">pCloud</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">📝 Office & Productivity (8 programs)</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">📚</span><span class="command-name">LibreOffice</span></li>
+                            <li class="command-item"><span class="command-icon">📝</span><span class="command-name">Notion</span></li>
+                            <li class="command-item"><span class="command-icon">💎</span><span class="command-name">Obsidian</span></li>
+                            <li class="command-item"><span class="command-icon">🐘</span><span class="command-name">Evernote</span></li>
+                            <li class="command-item"><span class="command-icon">📄</span><span class="command-name">Adobe Acrobat Reader</span></li>
+                            <li class="command-item"><span class="command-icon">📋</span><span class="command-name">Microsoft Office 365</span></li>
+                            <li class="command-item"><span class="command-icon">✏️</span><span class="command-name">Grammarly</span></li>
+                            <li class="command-item"><span class="command-icon">📚</span><span class="command-name">Calibre</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🎮 Gaming (10 programs)</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🎮</span><span class="command-name">Steam</span></li>
+                            <li class="command-item"><span class="command-icon">🎯</span><span class="command-name">Epic Games Launcher</span></li>
+                            <li class="command-item"><span class="command-icon">🎪</span><span class="command-name">GOG Galaxy</span></li>
+                            <li class="command-item"><span class="command-icon">🎮</span><span class="command-name">EA App</span></li>
+                            <li class="command-item"><span class="command-icon">⚔️</span><span class="command-name">Battle.net</span></li>
+                            <li class="command-item"><span class="command-icon">🎮</span><span class="command-name">Ubisoft Connect</span></li>
+                            <li class="command-item"><span class="command-icon">🎮</span><span class="command-name">Xbox App</span></li>
+                            <li class="command-item"><span class="command-icon">💜</span><span class="command-name">Discord</span></li>
+                            <li class="command-item"><span class="command-icon">🔥</span><span class="command-name">MSI Afterburner</span></li>
+                            <li class="command-item"><span class="command-icon">🐍</span><span class="command-name">Razer Synapse</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🎨 Graphics & Design (9 programs)</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🎨</span><span class="command-name">GIMP</span></li>
+                            <li class="command-item"><span class="command-icon">🖊️</span><span class="command-name">Inkscape</span></li>
+                            <li class="command-item"><span class="command-icon">🎨</span><span class="command-name">Krita</span></li>
+                            <li class="command-item"><span class="command-icon">🎨</span><span class="command-name">Paint.NET</span></li>
+                            <li class="command-item"><span class="command-icon">🎬</span><span class="command-name">Blender</span></li>
+                            <li class="command-item"><span class="command-icon">🎨</span><span class="command-name">DaVinci Resolve</span></li>
+                            <li class="command-item"><span class="command-icon">🎨</span><span class="command-name">Figma</span></li>
+                            <li class="command-item"><span class="command-icon">🖼️</span><span class="command-name">IrfanView</span></li>
+                            <li class="command-item"><span class="command-icon">🖼️</span><span class="command-name">XnView</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🌐 Network Tools (7 programs)</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🦈</span><span class="command-name">Wireshark</span></li>
+                            <li class="command-item"><span class="command-icon">🖥️</span><span class="command-name">PuTTY</span></li>
+                            <li class="command-item"><span class="command-icon">📁</span><span class="command-name">WinSCP</span></li>
+                            <li class="command-item"><span class="command-icon">📂</span><span class="command-name">FileZilla</span></li>
+                            <li class="command-item"><span class="command-icon">🔍</span><span class="command-name">Advanced IP Scanner</span></li>
+                            <li class="command-item"><span class="command-icon">😠</span><span class="command-name">Angry IP Scanner</span></li>
+                            <li class="command-item"><span class="command-icon">📶</span><span class="command-name">NetSpot</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">📁 File Management (5 programs)</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">📁</span><span class="command-name">Total Commander</span></li>
+                            <li class="command-item"><span class="command-icon">📂</span><span class="command-name">FreeCommander</span></li>
+                            <li class="command-item"><span class="command-icon">📁</span><span class="command-name">Double Commander</span></li>
+                            <li class="command-item"><span class="command-icon">🔀</span><span class="command-name">WinMerge</span></li>
+                            <li class="command-item"><span class="command-icon">⚖️</span><span class="command-name">Beyond Compare</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RESCUE & RECOVERY MENU -->
+            <div class="menu-section" id="rescue">
+                <div class="menu-header" onclick="toggleSection(this)">
+                    <span class="menu-title">🛟 Rescue & Recovery</span>
+                    <div>
+                        <span class="menu-count">40+ commands</span>
+                        <button class="collapse-btn">▼</button>
+                    </div>
+                </div>
+                <div class="menu-content">
+                    <div class="submenu">
+                        <div class="submenu-title">💼 Backup & Export</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🎯</span><span class="command-name">Smart Profile Backup (Desktop/Docs/Pictures)</span></li>
+                            <li class="command-item"><span class="command-icon">👤</span><span class="command-name">Full User Profile Backup</span></li>
+                            <li class="command-item"><span class="command-icon">✅</span><span class="command-name">Selective Backup</span></li>
+                            <li class="command-item"><span class="command-icon">🔌</span><span class="command-name">Backup Drivers</span></li>
+                            <li class="command-item"><span class="command-icon">📶</span><span class="command-name">Export WiFi Profiles</span></li>
+                            <li class="command-item"><span class="command-icon">🌐</span><span class="command-name">Backup Browser Data</span></li>
+                            <li class="command-item"><span class="command-icon">🔑</span><span class="command-name">Backup Product Keys</span></li>
+                            <li class="command-item"><span class="command-icon">📧</span><span class="command-name">Backup Outlook Data</span></li>
+                            <li class="command-item"><span class="command-icon">📂</span><span class="command-name">Backup Desktop & Documents</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">♻️ Restore</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">📶</span><span class="command-name">Restore WiFi Profiles</span></li>
+                            <li class="command-item"><span class="command-icon">🌐</span><span class="command-name">Restore Browser Profiles</span></li>
+                            <li class="command-item"><span class="command-icon">🔄</span><span class="command-name">System Restore</span></li>
+                            <li class="command-item"><span class="command-icon">⏪</span><span class="command-name">Previous Versions (Shadow Copy)</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">📋 System State & Registry</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">📝</span><span class="command-name">Registry Editor</span></li>
+                            <li class="command-item"><span class="command-icon">💾</span><span class="command-name">Backup Registry Hives</span></li>
+                            <li class="command-item"><span class="command-icon">📥</span><span class="command-name">Import Registry File</span></li>
+                            <li class="command-item"><span class="command-icon">📍</span><span class="command-name">Create Restore Point</span></li>
+                            <li class="command-item"><span class="command-icon">💾</span><span class="command-name">Windows Backup</span></li>
+                            <li class="command-item"><span class="command-icon">⏱️</span><span class="command-name">File History</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">💿 Image & WIM Tools</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">📀</span><span class="command-name">Mount ISO</span></li>
+                            <li class="command-item"><span class="command-icon">📤</span><span class="command-name">Unmount ISO</span></li>
+                            <li class="command-item"><span class="command-icon">📀</span><span class="command-name">Mount WIM/ESD</span></li>
+                            <li class="command-item"><span class="command-icon">📤</span><span class="command-name">Unmount WIM/ESD</span></li>
+                            <li class="command-item"><span class="command-icon">📥</span><span class="command-name">Apply WIM Image</span></li>
+                            <li class="command-item"><span class="command-icon">📸</span><span class="command-name">Capture WIM Image</span></li>
+                            <li class="command-item"><span class="command-icon">ℹ️</span><span class="command-name">Get WIM Info</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">👢 Boot & Recovery</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🔄</span><span class="command-name">Reboot to Recovery (WinRE)</span></li>
+                            <li class="command-item"><span class="command-icon">⚙️</span><span class="command-name">Reboot to BIOS/UEFI</span></li>
+                            <li class="command-item"><span class="command-icon">🛠️</span><span class="command-name">Boot Configuration</span></li>
+                            <li class="command-item"><span class="command-icon">📝</span><span class="command-name">BCDEdit</span></li>
+                            <li class="command-item"><span class="command-icon">🔧</span><span class="command-name">Repair Boot Loader</span></li>
+                            <li class="command-item"><span class="command-icon">🔨</span><span class="command-name">Rebuild BCD</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HELP MENU -->
+            <div class="menu-section" id="help">
+                <div class="menu-header" onclick="toggleSection(this)">
+                    <span class="menu-title">❓ Help Menu</span>
+                    <div>
+                        <span class="menu-count">30+ commands</span>
+                        <button class="collapse-btn">▼</button>
+                    </div>
+                </div>
+                <div class="menu-content">
+                    <div class="submenu">
+                        <div class="submenu-title">🤖 AI Troubleshooter (7 AI Assistants)</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">💬</span><span class="command-name">ChatGPT (OpenAI)</span></li>
+                            <li class="command-item"><span class="command-icon">🔷</span><span class="command-name">Claude (Anthropic)</span></li>
+                            <li class="command-item"><span class="command-icon">🔍</span><span class="command-name">Perplexity AI</span></li>
+                            <li class="command-item"><span class="command-icon">🌟</span><span class="command-name">Google Gemini</span></li>
+                            <li class="command-item"><span class="command-icon">🤖</span><span class="command-name">Microsoft Copilot</span></li>
+                            <li class="command-item"><span class="command-icon">💭</span><span class="command-name">Bing Chat</span></li>
+                            <li class="command-item"><span class="command-icon">🎯</span><span class="command-name">You.com</span></li>
+                            <li class="command-item"><span class="command-icon">📝</span><span class="command-name">Copy System Info for AI</span></li>
+                            <li class="command-item"><span class="command-icon">💡</span><span class="command-name">AI Troubleshooting Tips</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🔧 Windows Troubleshooters</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🔧</span><span class="command-name">All Troubleshooters</span></li>
+                            <li class="command-item"><span class="command-icon">🌐</span><span class="command-name">Network Troubleshooter</span></li>
+                            <li class="command-item"><span class="command-icon">🔄</span><span class="command-name">Windows Update Troubleshooter</span></li>
+                            <li class="command-item"><span class="command-icon">🔊</span><span class="command-name">Audio Troubleshooter</span></li>
+                            <li class="command-item"><span class="command-icon">🖨️</span><span class="command-name">Printer Troubleshooter</span></li>
+                            <li class="command-item"><span class="command-icon">⚡</span><span class="command-name">Power Troubleshooter</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🔗 Useful Websites (13 links)</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🔑</span><span class="command-name">MAS Activation Script</span></li>
+                            <li class="command-item"><span class="command-icon">💾</span><span class="command-name">Microsoft Download Center</span></li>
+                            <li class="command-item"><span class="command-icon">🪟</span><span class="command-name">Windows Insider ISO</span></li>
+                            <li class="command-item"><span class="command-icon">🔗</span><span class="command-name">MS Software Download</span></li>
+                            <li class="command-item"><span class="command-icon">🛠️</span><span class="command-name">Chris Titus WinUtil</span></li>
+                            <li class="command-item"><span class="command-icon">📥</span><span class="command-name">Get Into PC</span></li>
+                            <li class="command-item"><span class="command-icon">⚙️</span><span class="command-name">Autounattend Generator</span></li>
+                            <li class="command-item"><span class="command-icon">🔧</span><span class="command-name">Sordum Tools</span></li>
+                            <li class="command-item"><span class="command-icon">💻</span><span class="command-name">Windows Config Designer</span></li>
+                            <li class="command-item"><span class="command-icon">🔌</span><span class="command-name">Snappy Driver Installer</span></li>
+                            <li class="command-item"><span class="command-icon">🔨</span><span class="command-name">NirSoft Utilities</span></li>
+                            <li class="command-item"><span class="command-icon">🛠️</span><span class="command-name">Sysinternals Suite</span></li>
+                            <li class="command-item"><span class="command-icon">📦</span><span class="command-name">Ninite</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">📚 Documentation</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">📖</span><span class="command-name">Windows Commands Reference</span></li>
+                            <li class="command-item"><span class="command-icon">💻</span><span class="command-name">PowerShell Documentation</span></li>
+                            <li class="command-item"><span class="command-icon">📝</span><span class="command-name">Windows Registry Guide</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADVANCED MENU -->
+            <div class="menu-section" id="advanced">
+                <div class="menu-header" onclick="toggleSection(this)">
+                    <span class="menu-title">⚙️ Advanced Tools</span>
+                    <div>
+                        <span class="menu-count">90+ commands</span>
+                        <button class="collapse-btn">▼</button>
+                    </div>
+                </div>
+                <div class="menu-content">
+                    <div class="submenu">
+                        <div class="submenu-title">📝 Registry Tweaks (10 tweaks)</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🚫</span><span class="command-name">Disable Windows Telemetry</span></li>
+                            <li class="command-item"><span class="command-icon">🚫</span><span class="command-name">Disable Cortana</span></li>
+                            <li class="command-item"><span class="command-icon">🌙</span><span class="command-name">Enable Dark Theme</span></li>
+                            <li class="command-item"><span class="command-icon">🚫</span><span class="command-name">Disable Windows Animations</span></li>
+                            <li class="command-item"><span class="command-icon">👁️</span><span class="command-name">Show File Extensions</span></li>
+                            <li class="command-item"><span class="command-icon">👁️</span><span class="command-name">Show Hidden Files</span></li>
+                            <li class="command-item"><span class="command-icon">🚫</span><span class="command-name">Disable Web Search in Start</span></li>
+                            <li class="command-item"><span class="command-icon">🗑️</span><span class="command-name">Remove OneDrive</span></li>
+                            <li class="command-item"><span class="command-icon">🖱️</span><span class="command-name">Classic Context Menu (Win11)</span></li>
+                            <li class="command-item"><span class="command-icon">🚫</span><span class="command-name">Remove Ads from Start Menu</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🎮 Gaming Optimizations (6 optimizations)</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🎮</span><span class="command-name">Enable Game Mode</span></li>
+                            <li class="command-item"><span class="command-icon">🚫</span><span class="command-name">Disable Game Bar</span></li>
+                            <li class="command-item"><span class="command-icon">⚡</span><span class="command-name">Enable Hardware Acceleration</span></li>
+                            <li class="command-item"><span class="command-icon">⚡</span><span class="command-name">Optimize for Low Latency</span></li>
+                            <li class="command-item"><span class="command-icon">🚫</span><span class="command-name">Disable Fullscreen Optimizations</span></li>
+                            <li class="command-item"><span class="command-icon">⚡</span><span class="command-name">High Performance Power Plan</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🔒 Privacy Tools (6 tools)</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">🚫</span><span class="command-name">Disable All Telemetry</span></li>
+                            <li class="command-item"><span class="command-icon">📍</span><span class="command-name">Disable Location Tracking</span></li>
+                            <li class="command-item"><span class="command-icon">📝</span><span class="command-name">Disable Activity History</span></li>
+                            <li class="command-item"><span class="command-icon">🚫</span><span class="command-name">Disable Advertising ID</span></li>
+                            <li class="command-item"><span class="command-icon">🗑️</span><span class="command-name">Clear Activity History</span></li>
+                            <li class="command-item"><span class="command-icon">🚫</span><span class="command-name">Hosts File Ad Blocker</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🔑 Activation Tools (4 tools)</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">✅</span><span class="command-name">Check Activation Status</span></li>
+                            <li class="command-item"><span class="command-icon">🔑</span><span class="command-name">View Product Key</span></li>
+                            <li class="command-item"><span class="command-icon">🔗</span><span class="command-name">Open MAS Activation</span></li>
+                            <li class="command-item"><span class="command-icon">📋</span><span class="command-name">Check Office Activation</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🌡️ Hardware Monitor (5 tools)</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">💻</span><span class="command-name">CPU & GPU Info</span></li>
+                            <li class="command-item"><span class="command-icon">🌡️</span><span class="command-name">Temperature Monitor</span></li>
+                            <li class="command-item"><span class="command-icon">💿</span><span class="command-name">Disk Health (SMART)</span></li>
+                            <li class="command-item"><span class="command-icon">🔋</span><span class="command-name">Battery Report</span></li>
+                            <li class="command-item"><span class="command-icon">⚡</span><span class="command-name">Power Configuration</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">⚡ Batch Operations (5 operations)</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">📝</span><span class="command-name">Bulk File Rename</span></li>
+                            <li class="command-item"><span class="command-icon">🔍</span><span class="command-name">Find Duplicate Files</span></li>
+                            <li class="command-item"><span class="command-icon">📏</span><span class="command-name">Find Large Files</span></li>
+                            <li class="command-item"><span class="command-icon">🖼️</span><span class="command-name">Batch Convert Images</span></li>
+                            <li class="command-item"><span class="command-icon">🗑️</span><span class="command-name">Mass File Delete by Extension</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">📜 Custom Scripts (4 features)</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">📜</span><span class="command-name">Manage Custom Scripts</span></li>
+                            <li class="command-item"><span class="command-icon">➕</span><span class="command-name">Create New Script</span></li>
+                            <li class="command-item"><span class="command-icon">📥</span><span class="command-name">Import Script</span></li>
+                            <li class="command-item"><span class="command-icon">📤</span><span class="command-name">Export Scripts</span></li>
+                        </ul>
+                    </div>
+                    <div class="submenu">
+                        <div class="submenu-title">🔧 Additional Advanced Tools</div>
+                        <ul class="command-list">
+                            <li class="command-item"><span class="command-icon">⚙️</span><span class="command-name">Windows Features On/Off</span></li>
+                            <li class="command-item"><span class="command-icon">🐋</span><span class="command-name">Manage Docker Containers</span></li>
+                            <li class="command-item"><span class="command-icon">🐧</span><span class="command-name">WSL Management</span></li>
+                            <li class="command-item"><span class="command-icon">💻</span><span class="command-name">Hyper-V Manager</span></li>
+                            <li class="command-item"><span class="command-icon">🔍</span><span class="command-name">Port Scanner</span></li>
+                            <li class="command-item"><span class="command-icon">🔐</span><span class="command-name">Password Generator</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <footer>
+            <h3>📊 Total Command Count: 450+</h3>
+            <p style="margin-top: 10px; color: #6c757d;">
+                Technician's Toolkit V30 Pro - Complete Edition with Dark Mode<br>
+                Developed by: Ronald Goodchild | Company: REGTeches<br>
+                Windows 11 Compatible | Python Standard Library Only
+            </p>
+            <p style="margin-top: 15px; font-size: 0.9em; color: #4a90e2;">
+                💾 All commands tested and verified | 🎨 Dark Mode UI | ⚡ Fast & Lightweight | 🔒 Admin-aware
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        function toggleSection(header) {
+            const content = header.nextElementSibling;
+            const button = header.querySelector('.collapse-btn');
+            
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                button.classList.remove('active');
+            } else {
+                content.classList.add('active');
+                button.classList.add('active');
+            }
+        }
+
+        function toggleAllSections() {
+            const allContents = document.querySelectorAll('.menu-content');
+            const allButtons = document.querySelectorAll('.collapse-btn');
+            const anyOpen = Array.from(allContents).some(content => content.classList.contains('active'));
+            
+            const btn = event.target;
+            
+            if (anyOpen) {
+                allContents.forEach(content => content.classList.remove('active'));
+                allButtons.forEach(button => button.classList.remove('active'));
+                btn.textContent = 'Expand All Sections';
+            } else {
+                allContents.forEach(content => content.classList.add('active'));
+                allButtons.forEach(button => button.classList.add('active'));
+                btn.textContent = 'Collapse All Sections';
+            }
+        }
+
+        function searchCommands() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const commandItems = document.querySelectorAll('.command-item, .submenu-title');
+            const sections = document.querySelectorAll('.menu-section');
+            
+            if (searchTerm === '') {
+                // Reset all
+                commandItems.forEach(item => {
+                    item.style.display = '';
+                    const text = item.querySelector('.command-name');
+                    if (text) {
+                        text.innerHTML = text.textContent;
+                    }
+                });
+                sections.forEach(section => section.style.display = '');
+                return;
+            }
+            
+            // Hide all sections first
+            sections.forEach(section => section.style.display = 'none');
+            
+            commandItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    item.style.display = '';
+                    
+                    // Show parent section
+                    let section = item.closest('.menu-section');
+                    if (section) {
+                        section.style.display = '';
+                        // Auto-expand matching sections
+                        const content = section.querySelector('.menu-content');
+                        const button = section.querySelector('.collapse-btn');
+                        content.classList.add('active');
+                        button.classList.add('active');
+                    }
+                    
+                    // Highlight matching text
+                    const commandName = item.querySelector('.command-name');
+                    if (commandName) {
+                        const regex = new RegExp(`(${searchTerm})`, 'gi');
+                        commandName.innerHTML = commandName.textContent.replace(regex, '<span class="highlight">$1</span>');
+                    }
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Smooth scroll to sections
+        document.querySelectorAll('.toc-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Auto-expand the section
+                    const content = target.querySelector('.menu-content');
+                    const button = target.querySelector('.collapse-btn');
+                    if (content && !content.classList.contains('active')) {
+                        content.classList.add('active');
+                        button.classList.add('active');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
