@@ -2,6 +2,9 @@
 
 Reconstructed from the original development history (February - May 2026).
 
+## Unreleased
+- Add `--version` without GUI startup and share one version constant with the title and About dialog.
+
 ## [4.0 "Pro Suite"] - 2026-05-05
 - AppForge, CyberScan and BackupPro launchers built in (now optional companion projects)
 - Complete Windows Update repair and Defender repair

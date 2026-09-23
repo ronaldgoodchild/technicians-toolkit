@@ -10,3 +10,5 @@ jobs:
           python-version: "3.12"
       - name: Byte-compile every Python file
         run: python -m compileall -q .
+      - name: Test command-line version output
+        run: python -m unittest discover -s tests -v

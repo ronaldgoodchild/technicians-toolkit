@@ -35,6 +35,16 @@ python technicians_toolkit.py
 
 Single `.exe`: `pip install pyinstaller` then `pyinstaller --onefile --windowed --name TechniciansToolkit technicians_toolkit.py`.
 
+Check the version from a terminal without opening the GUI or requiring Tkinter:
+
+```powershell
+python technicians_toolkit.py --version
+```
+
+This prints `REGTeches Technician's Toolkit Pro Suite 4.0` and exits. `--version`
+takes precedence over companion launch flags. The application keeps its version
+in `APP_VERSION`, shared by this output, the window title and the About dialog.
+
 ## Companion apps (optional)
 
 The toolkit can launch these sibling projects if their files sit next to `technicians_toolkit.py`:

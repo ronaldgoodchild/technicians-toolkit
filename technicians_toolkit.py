@@ -1,18 +1,27 @@
 #!/usr/bin/env python3
 """
 ==========================================
-REGTeches Technician's Toolkit Pro Suite v4.0
+REGTeches Technician's Toolkit Pro Suite
 Company: REGTeches | Developer: Ronald Goodchild
 All-in-one Windows IT toolkit (launches the optional AppForge and BackupPro companion apps)
 ==========================================
 """
+
+import sys
+
+APP_VERSION = "4.0"
+
+# Handle this before GUI imports and companion dispatch so version queries
+# work without Tk installed and never launch another application.
+if __name__ == "__main__" and "--version" in sys.argv[1:]:
+    print(f"REGTeches Technician's Toolkit Pro Suite {APP_VERSION}")
+    sys.exit(0)
 
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog, scrolledtext, simpledialog
 import subprocess
 import platform
 import os
-import sys
 import ctypes
 import json
 import webbrowser
@@ -59,7 +68,7 @@ class DarkMenu(tk.Menu):
 class TechniciansToolkit:
     def __init__(self, root):
         self.root = root
-        self.root.title("REGTeches Technician's Toolkit Pro Suite v4.0  —  By: Ronald Goodchild")
+        self.root.title(f"REGTeches Technician's Toolkit Pro Suite v{APP_VERSION}  —  By: Ronald Goodchild")
         self.root.geometry("1400x800")
         
         # Set minimum window size
@@ -3090,7 +3099,7 @@ Good luck! 🚀"""
 
         # Version
         version = tk.Label(about_window,
-                          text="Pro Suite v4.0  —  All-in-One Windows IT Platform",
+                          text=f"Pro Suite v{APP_VERSION}  —  All-in-One Windows IT Platform",
                           font=('Segoe UI', 11),
                           bg='#1e2936',
                           fg='#aaccff')
