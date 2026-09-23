@@ -3,7 +3,7 @@
 Comment on (or open) an issue first so we don't duplicate work.
 
 ## Good first issues
-- [ ] Add screenshots to the README
+- [x] Add screenshots to the README
 - [ ] Split the 3,400-line `technicians_toolkit.py` into modules (one per tab)
 - [ ] Add a "Create restore point first" prompt before destructive tools
 - [ ] Add a `--version` flag and one version constant

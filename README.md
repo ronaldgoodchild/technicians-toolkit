@@ -4,6 +4,11 @@ A free, all-in-one **Windows IT technician toolkit** in a single dark-mode Pytho
 
 > "Pro Suite" v4.0 - built by a working technician who got tired of retyping the same commands on every service call. Free to use, free to change.
 
+## Screenshots
+
+![System dashboard with the Automated / Maintenance / Network / Security menus](docs/screenshots/main.png)
+*System dashboard with the Automated / Maintenance / Network / Security menus*
+
 ## What is inside
 
 | Area | Examples |
