@@ -3,6 +3,7 @@
 Reconstructed from the original development history (February - May 2026).
 
 ## [Unreleased]
+- Changed: built-in PowerShell commands now call `powershell.exe` explicitly, so they always run Windows PowerShell 5.1 even when a `powershell.bat` shim forwarding to PowerShell 7 is earlier on PATH
 - Fixed: Password Generator returned the user's PowerShell profile banner instead of a password; it now uses Python's `secrets` module
 - Fixed: all `powershell -Command` calls now use `-NoProfile`, so profile output no longer pollutes results and commands start faster
 - Security: dialog input (hosts, package IDs, user names, passwords, drive letters, extensions, ports, Wi-Fi names) is validated before being placed in a shell command

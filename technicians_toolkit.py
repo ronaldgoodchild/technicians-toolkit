@@ -209,7 +209,7 @@ class TechniciansToolkit:
                 # Get CPU usage
                 if platform.system() == 'Windows':
                     result = subprocess.run(
-                        'powershell -NoProfile -Command "Get-Counter \'\\Processor(_Total)\\% Processor Time\' | Select-Object -ExpandProperty CounterSamples | Select-Object -ExpandProperty CookedValue"',
+                        'powershell.exe -NoProfile -Command "Get-Counter \'\\Processor(_Total)\\% Processor Time\' | Select-Object -ExpandProperty CounterSamples | Select-Object -ExpandProperty CookedValue"',
                         shell=True,
                         capture_output=True,
                         text=True,
@@ -221,7 +221,7 @@ class TechniciansToolkit:
                     
                     # Get memory usage
                     result = subprocess.run(
-                        'powershell -NoProfile -Command "Get-CimInstance Win32_OperatingSystem | Select-Object @{Name=\'PercentUsed\';Expression={[math]::Round((($_.TotalVisibleMemorySize - $_.FreePhysicalMemory) / $_.TotalVisibleMemorySize) * 100, 1)}} | Select-Object -ExpandProperty PercentUsed"',
+                        'powershell.exe -NoProfile -Command "Get-CimInstance Win32_OperatingSystem | Select-Object @{Name=\'PercentUsed\';Expression={[math]::Round((($_.TotalVisibleMemorySize - $_.FreePhysicalMemory) / $_.TotalVisibleMemorySize) * 100, 1)}} | Select-Object -ExpandProperty PercentUsed"',
                         shell=True,
                         capture_output=True,
                         text=True,
@@ -264,8 +264,8 @@ class TechniciansToolkit:
         term_menu = DarkMenu(file_menu, tearoff=0, font=('Segoe UI', 9))
         file_menu.add_cascade(label="🖥️ Open Terminal", menu=term_menu)
         term_menu.add_command(label="Command Prompt", command=lambda: self.run_command("cmd"))
-        term_menu.add_command(label="PowerShell", command=lambda: self.run_command("powershell"))
-        term_menu.add_command(label="PowerShell (Admin)", command=lambda: self.run_command("powershell", admin=True))
+        term_menu.add_command(label="PowerShell", command=lambda: self.run_command("powershell.exe"))
+        term_menu.add_command(label="PowerShell (Admin)", command=lambda: self.run_command("powershell.exe", admin=True))
         term_menu.add_command(label="Windows Terminal", command=lambda: self.run_command("wt"))
         
         file_menu.add_separator()
@@ -1201,7 +1201,7 @@ class TechniciansToolkit:
             # Get additional Windows info
             if platform.system() == 'Windows':
                 try:
-                    result = subprocess.run('powershell -NoProfile -Command "Get-CimInstance Win32_OperatingSystem | Select-Object Caption, Version"', 
+                    result = subprocess.run('powershell.exe -NoProfile -Command "Get-CimInstance Win32_OperatingSystem | Select-Object Caption, Version"', 
                                           shell=True, capture_output=True, text=True, timeout=5)
                     lines = result.stdout.strip().split('\n')
                     os_caption = ""
@@ -1291,7 +1291,7 @@ class TechniciansToolkit:
             try:
                 # Escape quotes properly for PowerShell
                 escaped_command = ps_command.replace('"', '`"')
-                full_command = f'powershell -NoProfile -Command "{escaped_command}"'
+                full_command = f'powershell.exe -NoProfile -Command "{escaped_command}"'
                 
                 result = subprocess.run(
                     full_command,
@@ -1391,11 +1391,11 @@ class TechniciansToolkit:
         
         def run_checks():
             checks = [
-                ("Checking disk health (SMART)...", 'powershell -NoProfile -Command "Get-PhysicalDisk | Select-Object FriendlyName, HealthStatus | Format-Table -AutoSize"'),
-                ("Checking memory modules...", 'powershell -NoProfile -Command "Get-CimInstance Win32_PhysicalMemory | Select-Object Capacity, Speed, Manufacturer | Format-Table -AutoSize"'),
+                ("Checking disk health (SMART)...", 'powershell.exe -NoProfile -Command "Get-PhysicalDisk | Select-Object FriendlyName, HealthStatus | Format-Table -AutoSize"'),
+                ("Checking memory modules...", 'powershell.exe -NoProfile -Command "Get-CimInstance Win32_PhysicalMemory | Select-Object Capacity, Speed, Manufacturer | Format-Table -AutoSize"'),
                 ("Verifying system files...", "sfc /verifyonly"),
                 ("Testing network connectivity...", "ping -n 3 8.8.8.8"),
-                ("Checking Windows version...", 'powershell -NoProfile -Command "Get-CimInstance Win32_OperatingSystem | Select-Object Caption, Version | Format-List"'),
+                ("Checking Windows version...", 'powershell.exe -NoProfile -Command "Get-CimInstance Win32_OperatingSystem | Select-Object Caption, Version | Format-List"'),
                 ("Listing recent errors...", "wevtutil qe System /c:10 /rd:true /f:text /q:\"*[System[(Level=1 or Level=2)]]\"")
             ]
             
@@ -1609,7 +1609,7 @@ class TechniciansToolkit:
             self.update_status("Clearing event logs...")
             try:
                 result = subprocess.run(
-                    'powershell -NoProfile -Command "Get-WinEvent -ListLog * | ForEach-Object { Clear-EventLog $_.LogName -ErrorAction SilentlyContinue }"',
+                    'powershell.exe -NoProfile -Command "Get-WinEvent -ListLog * | ForEach-Object { Clear-EventLog $_.LogName -ErrorAction SilentlyContinue }"',
                     shell=True, capture_output=True, timeout=30
                 )
                 self.update_status("✓ Event logs cleared")
@@ -1777,7 +1777,7 @@ class TechniciansToolkit:
                 
                 # Step 7: Force check for updates
                 self.update_status("Step 7: Forcing Windows Update check...", 'info')
-                subprocess.run('powershell -NoProfile -Command "UsoClient StartScan"', shell=True, capture_output=True, timeout=10)
+                subprocess.run('powershell.exe -NoProfile -Command "UsoClient StartScan"', shell=True, capture_output=True, timeout=10)
                 subprocess.run('wuauclt /detectnow', shell=True, capture_output=True, timeout=10)
                 self.update_status("✅ Update check initiated", 'success')
                 
@@ -1938,17 +1938,17 @@ class TechniciansToolkit:
                     "Set-MpPreference -SevereThreatDefaultAction Quarantine"
                 ]
                 for cmd in ps_commands:
-                    subprocess.run(f'powershell -NoProfile -Command "{cmd}"', shell=True, capture_output=True, timeout=10)
+                    subprocess.run(f'powershell.exe -NoProfile -Command "{cmd}"', shell=True, capture_output=True, timeout=10)
                 self.update_status("✅ Defender settings reset to defaults", 'success')
                 
                 # Step 5: Update definitions
                 self.update_status("Step 5: Updating virus definitions...", 'info')
-                subprocess.run('powershell -NoProfile -Command "Update-MpSignature"', shell=True, capture_output=True, timeout=60)
+                subprocess.run('powershell.exe -NoProfile -Command "Update-MpSignature"', shell=True, capture_output=True, timeout=60)
                 self.update_status("✅ Definitions updated", 'success')
                 
                 # Step 6: Run quick scan to verify
                 self.update_status("Step 6: Verifying Defender is working...", 'info')
-                subprocess.run('powershell -NoProfile -Command "Start-MpScan -ScanType QuickScan"', shell=True, capture_output=True, timeout=5)
+                subprocess.run('powershell.exe -NoProfile -Command "Start-MpScan -ScanType QuickScan"', shell=True, capture_output=True, timeout=5)
                 self.update_status("✅ Quick scan initiated", 'success')
                 
                 self.update_status("\n" + "="*60, 'success')
@@ -1996,7 +1996,7 @@ class TechniciansToolkit:
             subprocess.run("net start WinDefend", shell=True, capture_output=True, timeout=10)
             
             # Enable real-time protection
-            subprocess.run('powershell -NoProfile -Command "Set-MpPreference -DisableRealtimeMonitoring $false"', shell=True, capture_output=True, timeout=10)
+            subprocess.run('powershell.exe -NoProfile -Command "Set-MpPreference -DisableRealtimeMonitoring $false"', shell=True, capture_output=True, timeout=10)
             
             self.update_status("✅ Windows Defender re-enabled", 'success')
             messagebox.showinfo("Complete", "Windows Defender has been re-enabled!")
@@ -2021,7 +2021,7 @@ class TechniciansToolkit:
                 "Update-MpSignature"
             ]
             for cmd in ps_commands:
-                subprocess.run(f'powershell -NoProfile -Command "{cmd}"', shell=True, capture_output=True, timeout=10)
+                subprocess.run(f'powershell.exe -NoProfile -Command "{cmd}"', shell=True, capture_output=True, timeout=10)
             
             self.update_status("✅ Defender reset to defaults", 'success')
             messagebox.showinfo("Complete", "Windows Defender has been reset to default settings!")
@@ -2420,7 +2420,7 @@ class TechniciansToolkit:
                 return
             
             self.update_status("Installing Chocolatey...")
-            cmd = 'powershell -NoProfile -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString(\'https://community.chocolatey.org/install.ps1\'))"'
+            cmd = 'powershell.exe -NoProfile -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString(\'https://community.chocolatey.org/install.ps1\'))"'
             self.run_command(cmd, admin=True)
     
     def choco_search(self):
@@ -2577,7 +2577,7 @@ class TechniciansToolkit:
     def show_product_key(self):
         """Show Windows product key"""
         try:
-            cmd = 'powershell -NoProfile -Command "(Get-WmiObject -query \'select * from SoftwareLicensingService\').OA3xOriginalProductKey"'
+            cmd = 'powershell.exe -NoProfile -Command "(Get-WmiObject -query \'select * from SoftwareLicensingService\').OA3xOriginalProductKey"'
             result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=10)
             if result.stdout.strip():
                 self.update_status(f"Windows Product Key: {result.stdout.strip()}")
@@ -2676,7 +2676,7 @@ class TechniciansToolkit:
             return
         
         self.update_status("Creating system restore point...")
-        cmd = 'powershell -NoProfile -Command "Checkpoint-Computer -Description \'REGTeches_Manual\' -RestorePointType \'MODIFY_SETTINGS\'"'
+        cmd = 'powershell.exe -NoProfile -Command "Checkpoint-Computer -Description \'REGTeches_Manual\' -RestorePointType \'MODIFY_SETTINGS\'"'
         self.run_command(cmd, admin=True)
         messagebox.showinfo("Complete", "System restore point created!")
     
@@ -2687,7 +2687,7 @@ class TechniciansToolkit:
         file_path = filedialog.askopenfilename(filetypes=[("ISO files", "*.iso")])
         if file_path:
             self.update_status(f"Mounting ISO: {file_path}")
-            cmd = f'powershell -NoProfile -Command "Mount-DiskImage -ImagePath \'{file_path}\'"'
+            cmd = f'powershell.exe -NoProfile -Command "Mount-DiskImage -ImagePath \'{file_path}\'"'
             self.run_command(cmd)
     
     def unmount_iso(self):
@@ -2828,14 +2828,14 @@ class TechniciansToolkit:
             # Add more detailed info
             info += "=== DETAILED HARDWARE ===\n"
             try:
-                result = subprocess.run('powershell -NoProfile -Command "Get-CimInstance Win32_Processor | Select-Object Name, NumberOfCores, NumberOfLogicalProcessors, MaxClockSpeed | Format-List"',
+                result = subprocess.run('powershell.exe -NoProfile -Command "Get-CimInstance Win32_Processor | Select-Object Name, NumberOfCores, NumberOfLogicalProcessors, MaxClockSpeed | Format-List"',
                                       shell=True, capture_output=True, text=True, timeout=5)
                 info += result.stdout + "\n"
             except Exception:
                 pass
             
             try:
-                result = subprocess.run('powershell -NoProfile -Command "Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum | Select-Object @{Name=\'TotalRAM(GB)\';Expression={[math]::Round($_.Sum/1GB,2)}} | Format-List"',
+                result = subprocess.run('powershell.exe -NoProfile -Command "Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum | Select-Object @{Name=\'TotalRAM(GB)\';Expression={[math]::Round($_.Sum/1GB,2)}} | Format-List"',
                                       shell=True, capture_output=True, text=True, timeout=5)
                 info += result.stdout + "\n"
             except Exception:
@@ -2843,7 +2843,7 @@ class TechniciansToolkit:
             
             info += "\n=== RECENT ERRORS (Last 5) ===\n"
             try:
-                result = subprocess.run('powershell -NoProfile -Command "Get-EventLog -LogName System -EntryType Error -Newest 5 | Select-Object TimeGenerated, Source, Message | Format-List"',
+                result = subprocess.run('powershell.exe -NoProfile -Command "Get-EventLog -LogName System -EntryType Error -Newest 5 | Select-Object TimeGenerated, Source, Message | Format-List"',
                                       shell=True, capture_output=True, text=True, timeout=10)
                 info += result.stdout + "\n"
             except Exception:
@@ -2853,7 +2853,7 @@ class TechniciansToolkit:
             try:
                 # Escape quotes and special characters for PowerShell
                 escaped_info = info.replace('"', '`"').replace('$', '`$')
-                cmd = f'powershell -NoProfile -Command "Set-Clipboard -Value @\"\n{escaped_info}\n\"@"'
+                cmd = f'powershell.exe -NoProfile -Command "Set-Clipboard -Value @\"\n{escaped_info}\n\"@"'
                 subprocess.run(cmd, shell=True, capture_output=True, timeout=5)
                 
                 self.update_status("✅ System info copied to clipboard!", 'success')
@@ -3063,11 +3063,11 @@ Good luck! 🚀"""
                         # Get various system details
                         commands = [
                             ("System Info", "systeminfo"),
-                            ("CPU", 'powershell -NoProfile -Command "Get-CimInstance Win32_Processor | Select-Object Name, MaxClockSpeed, NumberOfCores | Format-List"'),
-                            ("Memory", 'powershell -NoProfile -Command "Get-CimInstance Win32_PhysicalMemory | Select-Object Capacity, Speed, Manufacturer | Format-Table -AutoSize"'),
-                            ("Disk Info", 'powershell -NoProfile -Command "Get-CimInstance Win32_DiskDrive | Select-Object Model, Size, Status | Format-List"'),
-                            ("Network Adapters", 'powershell -NoProfile -Command "Get-CimInstance Win32_NetworkAdapter | Where-Object {$_.NetEnabled} | Select-Object Name, Speed | Format-Table -AutoSize"'),
-                            ("Installed Updates", 'powershell -NoProfile -Command "Get-CimInstance Win32_QuickFixEngineering | Select-Object HotFixID, InstalledOn, Description | Format-Table -AutoSize"')
+                            ("CPU", 'powershell.exe -NoProfile -Command "Get-CimInstance Win32_Processor | Select-Object Name, MaxClockSpeed, NumberOfCores | Format-List"'),
+                            ("Memory", 'powershell.exe -NoProfile -Command "Get-CimInstance Win32_PhysicalMemory | Select-Object Capacity, Speed, Manufacturer | Format-Table -AutoSize"'),
+                            ("Disk Info", 'powershell.exe -NoProfile -Command "Get-CimInstance Win32_DiskDrive | Select-Object Model, Size, Status | Format-List"'),
+                            ("Network Adapters", 'powershell.exe -NoProfile -Command "Get-CimInstance Win32_NetworkAdapter | Where-Object {$_.NetEnabled} | Select-Object Name, Speed | Format-Table -AutoSize"'),
+                            ("Installed Updates", 'powershell.exe -NoProfile -Command "Get-CimInstance Win32_QuickFixEngineering | Select-Object HotFixID, InstalledOn, Description | Format-Table -AutoSize"')
                         ]
                         
                         for title, cmd in commands:
@@ -3432,7 +3432,7 @@ Press OK to close this help dialog."""
         if folder:
             size_mb = simpledialog.askinteger("Size", "Find files larger than (MB):", initialvalue=100)
             if size_mb:
-                cmd = f'powershell -NoProfile -Command "Get-ChildItem -Path \'{folder}\' -Recurse -File | Where-Object {{$_.Length -gt {size_mb*1048576}}} | Select-Object FullName, @{{Name=\'Size(MB)\';Expression={{[math]::Round($_.Length/1MB,2)}}}} | Format-Table"'
+                cmd = f'powershell.exe -NoProfile -Command "Get-ChildItem -Path \'{folder}\' -Recurse -File | Where-Object {{$_.Length -gt {size_mb*1048576}}} | Select-Object FullName, @{{Name=\'Size(MB)\';Expression={{[math]::Round($_.Length/1MB,2)}}}} | Format-Table"'
                 self.run_command(cmd)
     
     def batch_convert_images(self):
@@ -3486,7 +3486,7 @@ Press OK to close this help dialog."""
                 for port in ports.split(','):
                     if not self._valid_input(port.strip(), 'port'):
                         return
-                    self.run_command(f'powershell -NoProfile -Command "Test-NetConnection {host} -Port {port.strip()}"')
+                    self.run_command(f'powershell.exe -NoProfile -Command "Test-NetConnection {host} -Port {port.strip()}"')
     
     def _bundled_path(self, filename):
         """Return path to a bundled data file whether running frozen or as script."""
