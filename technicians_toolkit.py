@@ -22,6 +22,8 @@ import threading
 import shutil
 import tempfile
 import re
+import secrets
+import string
 
 
 # ── Companion app launcher flags ──────────────────────────────────────
@@ -162,7 +164,7 @@ class TechniciansToolkit:
                 return ctypes.windll.shell32.IsUserAnAdmin() != 0
             else:
                 return os.geteuid() == 0
-        except:
+        except Exception:
             return False
     
     def load_favorites(self):
@@ -172,7 +174,7 @@ class TechniciansToolkit:
             if os.path.exists(config_path):
                 with open(config_path, 'r') as f:
                     return json.load(f)
-        except:
+        except Exception:
             pass
         return []
     
@@ -228,7 +230,7 @@ class TechniciansToolkit:
                     if result.stdout:
                         mem_usage = float(result.stdout.strip())
                         self.mem_label.config(text=f"RAM: {mem_usage:.1f}%")
-            except:
+            except Exception:
                 pass
             
             # Schedule next update
@@ -1214,7 +1216,7 @@ class TechniciansToolkit:
                         system = os_caption
                         if os_version:
                             release = os_version
-                except:
+                except Exception:
                     pass
             
             # Shorten processor name if too long for display
@@ -1239,11 +1241,42 @@ class TechniciansToolkit:
         except Exception as e:
             return f"System info unavailable:\n{str(e)}"
     
+    # Allowed characters for values typed into dialogs and passed to a shell
+    _INPUT_PATTERNS = {
+        'host':    (r'[A-Za-z0-9._:\-]{1,253}', "a hostname or IP address"),
+        'package': (r'[A-Za-z0-9._+\-]{1,100}', "a package ID (letters, digits, . _ + -)"),
+        'query':   (r'[\w.+\- ]{1,100}', "a search term (letters, digits, . _ + - and spaces)"),
+        'user':    (r'[\w.\- ]{1,20}', "a user name (up to 20 letters, digits, . _ - and spaces)"),
+        'drive':   (r'[A-Za-z]', "a single drive letter"),
+        'ext':     (r'\.?[A-Za-z0-9_]{1,10}', "a file extension such as .tmp"),
+        'port':    (r'\d{1,5}', "a port number"),
+        'wifi':    (r'[^"&|<>^%\r\n]{1,64}', "a network name without & | < > ^ % or quotes"),
+    }
+
+    def _valid_input(self, value, kind):
+        """True if value is safe to embed in a shell command; otherwise tell the user why not."""
+        pattern, what = self._INPUT_PATTERNS[kind]
+        if re.fullmatch(pattern, value):
+            return True
+        messagebox.showerror("Invalid input", f"Please enter {what}.")
+        return False
+
+    def _safe_password(self, password):
+        """cmd.exe would mangle or execute these characters, so refuse them up front."""
+        if any(c in password for c in '"&|<>^%\r\n'):
+            messagebox.showerror("Invalid password", 'The password cannot contain any of: " & | < > ^ %')
+            return False
+        return True
+
     # PowerShell/CLI tools emit ANSI colour escapes that Tk shows as raw text
     _ANSI_RE = re.compile(r'\x1b\[[0-9;?]*[ -/]*[@-~]')
 
     def update_status(self, message, tag=None):
         """Update status display with timestamp and optional color tag"""
+        if threading.current_thread() is not threading.main_thread():
+            # Tk is not thread-safe: hand the update to the main loop
+            self.root.after(0, self.update_status, message, tag)
+            return
         message = self._ANSI_RE.sub('', str(message))
         timestamp = datetime.now().strftime("%H:%M:%S")
         self.status_text.insert('end', f"[{timestamp}] {message}\n", tag)
@@ -1252,7 +1285,7 @@ class TechniciansToolkit:
     
     def run_powershell_command(self, ps_command, show_output=True):
         """Execute PowerShell command (for Windows 11 compatibility - replaces WMIC)"""
-        self.update_status(f"Executing PowerShell command...")
+        self.update_status("Executing PowerShell command...")
         
         def execute():
             try:
@@ -1374,7 +1407,7 @@ class TechniciansToolkit:
                         # Show limited output
                         output = result.stdout[:500].strip()
                         self.update_status(output)
-                except:
+                except Exception:
                     self.update_status("  ⚠ Check failed")
                 self.update_status("")
             
@@ -1528,7 +1561,7 @@ class TechniciansToolkit:
             for cmd in commands:
                 try:
                     subprocess.run(cmd, shell=True, capture_output=True, timeout=30)
-                except:
+                except Exception:
                     pass
         self.update_status("✓ Temp files cleared")
     
@@ -1549,7 +1582,7 @@ class TechniciansToolkit:
         for cmd in commands:
             try:
                 subprocess.run(cmd, shell=True, capture_output=True, timeout=10)
-            except:
+            except Exception:
                 pass
         self.update_status("✓ Update cache cleared")
     
@@ -1563,7 +1596,7 @@ class TechniciansToolkit:
         try:
             subprocess.run("del /q /f /s C:\\Windows\\Prefetch\\* 2>nul", shell=True, capture_output=True, timeout=10)
             self.update_status("✓ Prefetch cleared")
-        except:
+        except Exception:
             self.update_status("⚠ Could not clear prefetch")
     
     def clear_event_logs(self):
@@ -1576,11 +1609,11 @@ class TechniciansToolkit:
             self.update_status("Clearing event logs...")
             try:
                 result = subprocess.run(
-                    'powershell -Command "Get-WinEvent -ListLog * | ForEach-Object { Clear-EventLog $_.LogName -ErrorAction SilentlyContinue }"',
+                    'powershell -NoProfile -Command "Get-WinEvent -ListLog * | ForEach-Object { Clear-EventLog $_.LogName -ErrorAction SilentlyContinue }"',
                     shell=True, capture_output=True, timeout=30
                 )
                 self.update_status("✓ Event logs cleared")
-            except:
+            except Exception:
                 self.update_status("⚠ Some event logs could not be cleared")
     
     def empty_recycle_bin(self):
@@ -1590,7 +1623,7 @@ class TechniciansToolkit:
             try:
                 subprocess.run("rd /s /q %systemdrive%\\$Recycle.Bin 2>nul", shell=True, capture_output=True, timeout=10)
                 self.update_status("✓ Recycle bin emptied")
-            except:
+            except Exception:
                 self.update_status("✓ Recycle bin processed")
     
     def clear_font_cache(self):
@@ -1601,7 +1634,7 @@ class TechniciansToolkit:
             subprocess.run("del /q /f /s %windir%\\ServiceProfiles\\LocalService\\AppData\\Local\\FontCache\\* 2>nul", shell=True, capture_output=True, timeout=10)
             subprocess.run("net start FontCache", shell=True, capture_output=True, timeout=5)
             self.update_status("✓ Font cache cleared")
-        except:
+        except Exception:
             self.update_status("⚠ Font cache operation completed with warnings")
     
     def clear_thumbnail_cache(self):
@@ -1610,7 +1643,7 @@ class TechniciansToolkit:
         try:
             subprocess.run("del /q /f /s %localappdata%\\Microsoft\\Windows\\Explorer\\*.db 2>nul", shell=True, capture_output=True, timeout=10)
             self.update_status("✓ Thumbnail cache cleared")
-        except:
+        except Exception:
             self.update_status("⚠ Thumbnail cache operation completed")
     
     def reset_windows_update(self):
@@ -1635,7 +1668,7 @@ class TechniciansToolkit:
         for cmd in commands:
             try:
                 subprocess.run(cmd, shell=True, capture_output=True, timeout=10)
-            except:
+            except Exception:
                 pass
         self.update_status("✓ Windows Update reset complete")
     
@@ -1681,7 +1714,7 @@ class TechniciansToolkit:
                         subprocess.run(f'icacls "{folder}" /grant administrators:F /t', shell=True, capture_output=True, timeout=30)
                         subprocess.run(f'rd /s /q "{folder}"', shell=True, capture_output=True, timeout=30)
                         self.update_status(f"  ✓ Cleared: {folder}", 'success')
-                    except:
+                    except Exception:
                         self.update_status(f"  ⚠ Could not clear: {folder}", 'warning')
                 
                 # Step 3: Fix registry entries
@@ -1697,7 +1730,7 @@ class TechniciansToolkit:
                 for cmd in reg_commands:
                     try:
                         subprocess.run(cmd, shell=True, capture_output=True, timeout=5)
-                    except:
+                    except Exception:
                         pass
                 self.update_status("✅ Registry entries fixed", 'success')
                 
@@ -1718,7 +1751,7 @@ class TechniciansToolkit:
                         result = subprocess.run(f"regsvr32.exe /s {dll}", shell=True, capture_output=True, timeout=5)
                         if result.returncode == 0:
                             dll_count += 1
-                    except:
+                    except Exception:
                         pass
                 self.update_status(f"✅ Re-registered {dll_count}/{len(dlls)} DLLs", 'success')
                 
@@ -1731,7 +1764,7 @@ class TechniciansToolkit:
                 for cmd in policy_commands:
                     try:
                         subprocess.run(cmd, shell=True, capture_output=True, timeout=30)
-                    except:
+                    except Exception:
                         pass
                 self.update_status("✅ Policies reset", 'success')
                 
@@ -1744,7 +1777,7 @@ class TechniciansToolkit:
                 
                 # Step 7: Force check for updates
                 self.update_status("Step 7: Forcing Windows Update check...", 'info')
-                subprocess.run('powershell -Command "UsoClient StartScan"', shell=True, capture_output=True, timeout=10)
+                subprocess.run('powershell -NoProfile -Command "UsoClient StartScan"', shell=True, capture_output=True, timeout=10)
                 subprocess.run('wuauclt /detectnow', shell=True, capture_output=True, timeout=10)
                 self.update_status("✅ Update check initiated", 'success')
                 
@@ -1823,7 +1856,7 @@ class TechniciansToolkit:
                     result = subprocess.run(f"regsvr32.exe /s {dll}", shell=True, capture_output=True, timeout=5)
                     if result.returncode == 0:
                         success_count += 1
-                except:
+                except Exception:
                     pass
             
             self.update_status(f"✅ Re-registered {success_count}/{len(dlls)} DLLs", 'success')
@@ -1905,17 +1938,17 @@ class TechniciansToolkit:
                     "Set-MpPreference -SevereThreatDefaultAction Quarantine"
                 ]
                 for cmd in ps_commands:
-                    subprocess.run(f'powershell -Command "{cmd}"', shell=True, capture_output=True, timeout=10)
+                    subprocess.run(f'powershell -NoProfile -Command "{cmd}"', shell=True, capture_output=True, timeout=10)
                 self.update_status("✅ Defender settings reset to defaults", 'success')
                 
                 # Step 5: Update definitions
                 self.update_status("Step 5: Updating virus definitions...", 'info')
-                subprocess.run('powershell -Command "Update-MpSignature"', shell=True, capture_output=True, timeout=60)
+                subprocess.run('powershell -NoProfile -Command "Update-MpSignature"', shell=True, capture_output=True, timeout=60)
                 self.update_status("✅ Definitions updated", 'success')
                 
                 # Step 6: Run quick scan to verify
                 self.update_status("Step 6: Verifying Defender is working...", 'info')
-                subprocess.run('powershell -Command "Start-MpScan -ScanType QuickScan"', shell=True, capture_output=True, timeout=5)
+                subprocess.run('powershell -NoProfile -Command "Start-MpScan -ScanType QuickScan"', shell=True, capture_output=True, timeout=5)
                 self.update_status("✅ Quick scan initiated", 'success')
                 
                 self.update_status("\n" + "="*60, 'success')
@@ -1963,7 +1996,7 @@ class TechniciansToolkit:
             subprocess.run("net start WinDefend", shell=True, capture_output=True, timeout=10)
             
             # Enable real-time protection
-            subprocess.run('powershell -Command "Set-MpPreference -DisableRealtimeMonitoring $false"', shell=True, capture_output=True, timeout=10)
+            subprocess.run('powershell -NoProfile -Command "Set-MpPreference -DisableRealtimeMonitoring $false"', shell=True, capture_output=True, timeout=10)
             
             self.update_status("✅ Windows Defender re-enabled", 'success')
             messagebox.showinfo("Complete", "Windows Defender has been re-enabled!")
@@ -1988,7 +2021,7 @@ class TechniciansToolkit:
                 "Update-MpSignature"
             ]
             for cmd in ps_commands:
-                subprocess.run(f'powershell -Command "{cmd}"', shell=True, capture_output=True, timeout=10)
+                subprocess.run(f'powershell -NoProfile -Command "{cmd}"', shell=True, capture_output=True, timeout=10)
             
             self.update_status("✅ Defender reset to defaults", 'success')
             messagebox.showinfo("Complete", "Windows Defender has been reset to default settings!")
@@ -2007,7 +2040,7 @@ class TechniciansToolkit:
                 for cmd in commands:
                     try:
                         subprocess.run(cmd, shell=True, capture_output=True, timeout=5)
-                    except:
+                    except Exception:
                         pass
             else:
                 self.update_status("  ⚠ Admin required for some optimizations")
@@ -2018,6 +2051,8 @@ class TechniciansToolkit:
         drive = simpledialog.askstring("Check Disk", "Enter drive letter (e.g., C):")
         if drive:
             drive = drive.upper().strip().replace(':', '')
+            if not self._valid_input(drive, 'drive'):
+                return
             if messagebox.askyesno("Confirm", f"Schedule disk check for drive {drive}: on next restart?"):
                 self.run_command(f"echo Y | chkdsk {drive}: /F /R", admin=True)
                 messagebox.showinfo("Scheduled", f"Disk check scheduled for drive {drive}: on next restart.")
@@ -2046,7 +2081,7 @@ class TechniciansToolkit:
             for task in tasks:
                 try:
                     subprocess.run(f'schtasks /Change /TN "{task}" /Disable', shell=True, capture_output=True, timeout=5)
-                except:
+                except Exception:
                     pass
             self.update_status("✓ Telemetry tasks disabled")
     
@@ -2070,7 +2105,7 @@ class TechniciansToolkit:
             for cmd in commands:
                 try:
                     subprocess.run(cmd, shell=True, capture_output=True, timeout=10)
-                except:
+                except Exception:
                     pass
             
             self.update_status("✓ Network reset complete - restart required")
@@ -2085,7 +2120,7 @@ class TechniciansToolkit:
             subprocess.run("ipconfig /renew", shell=True, capture_output=True, timeout=10)
             self.update_status("✓ IP address renewed")
             self.run_command("ipconfig /all")
-        except:
+        except Exception:
             self.update_status("⚠ IP renewal may have failed")
     
     def export_wifi_profiles(self):
@@ -2113,7 +2148,7 @@ class TechniciansToolkit:
     def show_wifi_password(self):
         """Show WiFi password for a profile"""
         profile = simpledialog.askstring("WiFi Password", "Enter WiFi network name:")
-        if profile:
+        if profile and self._valid_input(profile, 'wifi'):
             self.run_command(f"netsh wlan show profile name=\"{profile}\" key=clear")
     
     def wifi_report(self):
@@ -2147,19 +2182,22 @@ class TechniciansToolkit:
     def ping_test(self):
         """Perform ping test"""
         host = simpledialog.askstring("Ping Test", "Enter hostname or IP:", initialvalue="8.8.8.8")
-        if host:
+        if host and self._valid_input(host.strip(), 'host'):
+            host = host.strip()
             self.run_command(f"ping -n 10 {host}")
     
     def trace_route(self):
         """Perform trace route"""
         host = simpledialog.askstring("Trace Route", "Enter hostname or IP:", initialvalue="google.com")
-        if host:
+        if host and self._valid_input(host.strip(), 'host'):
+            host = host.strip()
             self.run_command(f"tracert {host}")
     
     def nslookup(self):
         """Perform DNS lookup"""
         host = simpledialog.askstring("NSLookup", "Enter hostname:", initialvalue="google.com")
-        if host:
+        if host and self._valid_input(host.strip(), 'host'):
+            host = host.strip()
             self.run_command(f"nslookup {host}")
     
     def open_hosts_file(self):
@@ -2253,10 +2291,10 @@ class TechniciansToolkit:
             return
         
         username = simpledialog.askstring("Change Password", "Enter username:")
-        if username:
+        if username and self._valid_input(username, 'user'):
             password = simpledialog.askstring("Change Password", f"Enter new password for {username}:", show='*')
-            if password:
-                self.run_command(f"net user {username} {password}")
+            if password and self._safe_password(password):
+                self.run_command(f'net user "{username}" "{password}"')
     
     def create_user(self):
         """Create new user account"""
@@ -2265,12 +2303,12 @@ class TechniciansToolkit:
             return
         
         username = simpledialog.askstring("Create User", "Enter username:")
-        if username:
+        if username and self._valid_input(username, 'user'):
             password = simpledialog.askstring("Create User", "Enter password:", show='*')
-            if password:
-                self.run_command(f"net user {username} {password} /add")
+            if password and self._safe_password(password):
+                self.run_command(f'net user "{username}" "{password}" /add')
                 if messagebox.askyesno("Admin Rights", "Add user to Administrators group?"):
-                    self.run_command(f"net localgroup administrators {username} /add")
+                    self.run_command(f'net localgroup administrators "{username}" /add')
     
     def delete_user(self):
         """Delete user account"""
@@ -2279,9 +2317,9 @@ class TechniciansToolkit:
             return
         
         username = simpledialog.askstring("Delete User", "Enter username to delete:")
-        if username:
+        if username and self._valid_input(username, 'user'):
             if messagebox.askyesno("Confirm", f"⚠️ Delete user '{username}'?\n\nThis action cannot be undone!"):
-                self.run_command(f"net user {username} /delete")
+                self.run_command(f'net user "{username}" /delete')
     
     def disable_uac(self):
         """Disable UAC"""
@@ -2333,27 +2371,31 @@ class TechniciansToolkit:
     def winget_search(self):
         """Search for packages with winget"""
         query = simpledialog.askstring("Winget Search", "Enter package name to search:")
-        if query:
+        if query and self._valid_input(query.strip(), 'query'):
+            query = query.strip()
             self.run_command(f"winget search {query}")
     
     def winget_install(self):
         """Install package with winget"""
         package = simpledialog.askstring("Winget Install", "Enter package ID to install:")
-        if package:
+        if package and self._valid_input(package.strip(), 'package'):
+            package = package.strip()
             if messagebox.askyesno("Confirm", f"Install {package}?"):
                 self.run_command(f"winget install --id {package} --silent --accept-package-agreements --accept-source-agreements")
     
     def winget_uninstall(self):
         """Uninstall package with winget"""
         package = simpledialog.askstring("Winget Uninstall", "Enter package ID to uninstall:")
-        if package:
+        if package and self._valid_input(package.strip(), 'package'):
+            package = package.strip()
             if messagebox.askyesno("Confirm", f"Uninstall {package}?"):
                 self.run_command(f"winget uninstall {package}")
     
     def winget_upgrade_package(self):
         """Upgrade specific package"""
         package = simpledialog.askstring("Winget Upgrade", "Enter package ID to upgrade:")
-        if package:
+        if package and self._valid_input(package.strip(), 'package'):
+            package = package.strip()
             self.run_command(f"winget upgrade {package}")
     
     def winget_export(self):
@@ -2378,19 +2420,21 @@ class TechniciansToolkit:
                 return
             
             self.update_status("Installing Chocolatey...")
-            cmd = 'powershell -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString(\'https://community.chocolatey.org/install.ps1\'))"'
+            cmd = 'powershell -NoProfile -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString(\'https://community.chocolatey.org/install.ps1\'))"'
             self.run_command(cmd, admin=True)
     
     def choco_search(self):
         """Search Chocolatey packages"""
         query = simpledialog.askstring("Chocolatey Search", "Enter package name:")
-        if query:
+        if query and self._valid_input(query.strip(), 'query'):
+            query = query.strip()
             self.run_command(f"choco search {query}")
     
     def choco_install(self):
         """Install Chocolatey package"""
         package = simpledialog.askstring("Chocolatey Install", "Enter package name:")
-        if package:
+        if package and self._valid_input(package.strip(), 'package'):
+            package = package.strip()
             if messagebox.askyesno("Confirm", f"Install {package}?"):
                 self.run_command(f"choco install {package} -y", admin=True)
     
@@ -2432,7 +2476,7 @@ class TechniciansToolkit:
                     self.update_status(f"Backing up {name}...")
                     try:
                         subprocess.run(f'robocopy "{path}" "{dest_path}" /E /XO /R:1 /W:1 /NFL /NDL', shell=True, capture_output=True, timeout=300)
-                    except:
+                    except Exception:
                         pass
             
             self.update_status("✓ Browser data backed up")
@@ -2459,7 +2503,7 @@ class TechniciansToolkit:
                         self.update_status(f"Restoring {name}...")
                         try:
                             subprocess.run(f'robocopy "{src_path}" "{path}" /E /XO /R:1 /W:1 /NFL /NDL', shell=True, capture_output=True, timeout=300)
-                        except:
+                        except Exception:
                             pass
                 
                 self.update_status("✓ Browser data restored")
@@ -2486,7 +2530,7 @@ class TechniciansToolkit:
                     self.update_status(f"Backing up {name}...")
                     try:
                         subprocess.run(f'robocopy "{path}" "{dest_path}" /E /R:1 /W:1 /NFL /NDL', shell=True, capture_output=True, timeout=600)
-                    except:
+                    except Exception:
                         pass
             
             self.update_status(f"✓ Smart backup complete: {backup_path}")
@@ -2505,7 +2549,7 @@ class TechniciansToolkit:
                     subprocess.run(f'robocopy "{profile_path}" "{backup_path}" /E /XJ /R:1 /W:1 /NFL /NDL', shell=True, capture_output=True, timeout=1800)
                     self.update_status(f"✓ Profile backed up to: {backup_path}")
                     messagebox.showinfo("Complete", f"Profile backup complete!\n\n{backup_path}")
-                except:
+                except Exception:
                     self.update_status("⚠ Backup completed with warnings")
     
     def selective_backup(self):
@@ -2521,7 +2565,7 @@ class TechniciansToolkit:
                     subprocess.run(f'robocopy "{source}" "{backup_path}" /E /R:1 /W:1', shell=True, capture_output=True, timeout=600)
                     self.update_status(f"✓ Backup complete: {backup_path}")
                     messagebox.showinfo("Complete", f"Backup complete!\n\n{backup_path}")
-                except:
+                except Exception:
                     self.update_status("⚠ Backup completed with warnings")
     
     def backup_product_keys(self):
@@ -2533,13 +2577,13 @@ class TechniciansToolkit:
     def show_product_key(self):
         """Show Windows product key"""
         try:
-            cmd = 'powershell -Command "(Get-WmiObject -query \'select * from SoftwareLicensingService\').OA3xOriginalProductKey"'
+            cmd = 'powershell -NoProfile -Command "(Get-WmiObject -query \'select * from SoftwareLicensingService\').OA3xOriginalProductKey"'
             result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=10)
             if result.stdout.strip():
                 self.update_status(f"Windows Product Key: {result.stdout.strip()}")
             else:
                 self.update_status("Product key not found or embedded in BIOS")
-        except:
+        except Exception:
             self.update_status("⚠ Could not retrieve product key")
     
     def backup_outlook(self):
@@ -2607,7 +2651,7 @@ class TechniciansToolkit:
                 self.update_status(f"Exporting {hive}...")
                 try:
                     subprocess.run(f'reg export {hive} "{filepath}" /y', shell=True, capture_output=True, timeout=30)
-                except:
+                except Exception:
                     pass
             
             self.update_status(f"✓ Registry backed up to: {reg_path}")
@@ -2632,7 +2676,7 @@ class TechniciansToolkit:
             return
         
         self.update_status("Creating system restore point...")
-        cmd = 'powershell -Command "Checkpoint-Computer -Description \'REGTeches_Manual\' -RestorePointType \'MODIFY_SETTINGS\'"'
+        cmd = 'powershell -NoProfile -Command "Checkpoint-Computer -Description \'REGTeches_Manual\' -RestorePointType \'MODIFY_SETTINGS\'"'
         self.run_command(cmd, admin=True)
         messagebox.showinfo("Complete", "System restore point created!")
     
@@ -2643,7 +2687,7 @@ class TechniciansToolkit:
         file_path = filedialog.askopenfilename(filetypes=[("ISO files", "*.iso")])
         if file_path:
             self.update_status(f"Mounting ISO: {file_path}")
-            cmd = f'powershell -Command "Mount-DiskImage -ImagePath \'{file_path}\'"'
+            cmd = f'powershell -NoProfile -Command "Mount-DiskImage -ImagePath \'{file_path}\'"'
             self.run_command(cmd)
     
     def unmount_iso(self):
@@ -2787,14 +2831,14 @@ class TechniciansToolkit:
                 result = subprocess.run('powershell -NoProfile -Command "Get-CimInstance Win32_Processor | Select-Object Name, NumberOfCores, NumberOfLogicalProcessors, MaxClockSpeed | Format-List"',
                                       shell=True, capture_output=True, text=True, timeout=5)
                 info += result.stdout + "\n"
-            except:
+            except Exception:
                 pass
             
             try:
                 result = subprocess.run('powershell -NoProfile -Command "Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum | Select-Object @{Name=\'TotalRAM(GB)\';Expression={[math]::Round($_.Sum/1GB,2)}} | Format-List"',
                                       shell=True, capture_output=True, text=True, timeout=5)
                 info += result.stdout + "\n"
-            except:
+            except Exception:
                 pass
             
             info += "\n=== RECENT ERRORS (Last 5) ===\n"
@@ -2802,14 +2846,14 @@ class TechniciansToolkit:
                 result = subprocess.run('powershell -NoProfile -Command "Get-EventLog -LogName System -EntryType Error -Newest 5 | Select-Object TimeGenerated, Source, Message | Format-List"',
                                       shell=True, capture_output=True, text=True, timeout=10)
                 info += result.stdout + "\n"
-            except:
+            except Exception:
                 info += "Could not retrieve recent errors\n"
             
             # Copy to clipboard using PowerShell
             try:
                 # Escape quotes and special characters for PowerShell
                 escaped_info = info.replace('"', '`"').replace('$', '`$')
-                cmd = f'powershell -Command "Set-Clipboard -Value @\"\n{escaped_info}\n\"@"'
+                cmd = f'powershell -NoProfile -Command "Set-Clipboard -Value @\"\n{escaped_info}\n\"@"'
                 subprocess.run(cmd, shell=True, capture_output=True, timeout=5)
                 
                 self.update_status("✅ System info copied to clipboard!", 'success')
@@ -3032,7 +3076,7 @@ Good luck! 🚀"""
                             try:
                                 result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=30)
                                 f.write(result.stdout)
-                            except:
+                            except Exception:
                                 f.write("Error retrieving information\n")
                             f.write("\n")
                     
@@ -3388,7 +3432,7 @@ Press OK to close this help dialog."""
         if folder:
             size_mb = simpledialog.askinteger("Size", "Find files larger than (MB):", initialvalue=100)
             if size_mb:
-                cmd = f'powershell -Command "Get-ChildItem -Path \'{folder}\' -Recurse -File | Where-Object {{$_.Length -gt {size_mb*1048576}}} | Select-Object FullName, @{{Name=\'Size(MB)\';Expression={{[math]::Round($_.Length/1MB,2)}}}} | Format-Table"'
+                cmd = f'powershell -NoProfile -Command "Get-ChildItem -Path \'{folder}\' -Recurse -File | Where-Object {{$_.Length -gt {size_mb*1048576}}} | Select-Object FullName, @{{Name=\'Size(MB)\';Expression={{[math]::Round($_.Length/1MB,2)}}}} | Format-Table"'
                 self.run_command(cmd)
     
     def batch_convert_images(self):
@@ -3400,7 +3444,7 @@ Press OK to close this help dialog."""
         folder = filedialog.askdirectory()
         if folder:
             ext = simpledialog.askstring("Extension", "Enter extension (e.g., .tmp):")
-            if ext and messagebox.askyesno("Confirm", f"Delete all *{ext} in {folder}?"):
+            if ext and self._valid_input(ext.strip(), 'ext') and messagebox.askyesno("Confirm", f"Delete all *{ext} in {folder}?"):
                 self.run_command(f'del /s /q "{folder}\\*{ext}"', admin=True)
     
     def manage_custom_scripts(self):
@@ -3435,11 +3479,14 @@ Press OK to close this help dialog."""
     def port_scanner(self):
         """Port scanner"""
         host = simpledialog.askstring("Port Scanner", "Enter host:", initialvalue="localhost")
-        if host:
+        if host and self._valid_input(host.strip(), 'host'):
+            host = host.strip()
             ports = simpledialog.askstring("Ports", "Ports (e.g., 80,443):")
             if ports:
                 for port in ports.split(','):
-                    self.run_command(f'powershell -Command "Test-NetConnection {host} -Port {port.strip()}"')
+                    if not self._valid_input(port.strip(), 'port'):
+                        return
+                    self.run_command(f'powershell -NoProfile -Command "Test-NetConnection {host} -Port {port.strip()}"')
     
     def _bundled_path(self, filename):
         """Return path to a bundled data file whether running frozen or as script."""
@@ -3508,21 +3555,19 @@ Press OK to close this help dialog."""
         self.run_command(cmd)
 
     def password_generator(self):
-        """Generate password"""
-        length = simpledialog.askinteger("Password", "Length:", initialvalue=16, minvalue=8)
+        """Generate a random password with a cryptographically secure RNG"""
+        length = simpledialog.askinteger("Password", "Length:", initialvalue=16, minvalue=8, maxvalue=128)
         if length:
-            cmd = f'powershell -Command "$p=-join((65..90)+(97..122)+(48..57)+@(33,35,36,37,38,42,43,45,61,63,64)|Get-Random -Count {length}|%%{{[char]$_}});Write-Host $p"'
-            result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-            if result.stdout:
-                pwd = result.stdout.strip()
-                self.update_status(f"🔐 Password: {pwd}", 'success')
-                messagebox.showinfo("Password", f"Generated:\n\n{pwd}")
+            alphabet = string.ascii_letters + string.digits + "!#$%&*+-=?@"
+            pwd = ''.join(secrets.choice(alphabet) for _ in range(length))
+            self.update_status(f"🔐 Password: {pwd}", 'success')
+            messagebox.showinfo("Password", f"Generated:\n\n{pwd}")
 
 
 def main():
     """Main entry point"""
     root = tk.Tk()
-    app = TechniciansToolkit(root)
+    TechniciansToolkit(root)
     
     # Center window on screen
     root.update_idletasks()
