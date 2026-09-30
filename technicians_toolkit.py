@@ -21,6 +21,7 @@ from pathlib import Path
 import threading
 import shutil
 import tempfile
+import re
 
 
 # ── Companion app launcher flags ──────────────────────────────────────
@@ -1238,8 +1239,12 @@ class TechniciansToolkit:
         except Exception as e:
             return f"System info unavailable:\n{str(e)}"
     
+    # PowerShell/CLI tools emit ANSI colour escapes that Tk shows as raw text
+    _ANSI_RE = re.compile(r'\x1b\[[0-9;?]*[ -/]*[@-~]')
+
     def update_status(self, message, tag=None):
         """Update status display with timestamp and optional color tag"""
+        message = self._ANSI_RE.sub('', str(message))
         timestamp = datetime.now().strftime("%H:%M:%S")
         self.status_text.insert('end', f"[{timestamp}] {message}\n", tag)
         self.status_text.see('end')
